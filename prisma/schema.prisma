@@ -9,6 +9,145 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mysql"
   url      = env("DATABASE_URL")
+}
+
+model Users {
+  id            Int      @id @default(autoincrement())
+  email         String   @unique
+  name          String
+  nickname      String
+  authProvider  String
+  profileUrl    String
+  team          Int
+  createdAt     DateTime @default(now())
+  teamSeletedAt DateTime @default(now())
+  winningRate   Int
+  level         Int
+
+  teams      Teams      @relation(fields: [team], references: [id])
+  userlevels UserLevels @relation(fields: [level], references: [id])
+
+  feedLikes     FeedLike[]
+  boardThumbs   BoardThumb[]
+  Feeds         Feeds[]
+  FeedComments  FeedComments[]
+  Board         Board[]
+  BoardComments BoardComments[]
+}
+
+model UserLevels {
+  id    Int     @id @default(autoincrement())
+  level String
+  Users Users[]
+}
+
+model Teams {
+  id   Int    @id @default(autoincrement())
+  name String
+  icon String
+
+  homeGames GameSchedule[] @relation("HomeTeam")
+  awayGames GameSchedule[] @relation("AwayTeam")
+  Users     Users[]
+  Stadium   Stadium[]
+}
+
+model Stadium {
+  id       Int    @id @default(autoincrement())
+  name     String
+  location String
+  homeTeam Int
+
+  teams Teams @relation(fields: [homeTeam], references: [id])
+}
+
+model GameSchedule {
+  id       Int      @id
+  home     Int
+  away     Int
+  stadium  Int
+  date     DateTime @default(now())
+  homeTeam Teams    @relation("HomeTeam", fields: [home], references: [id])
+  awayTeam Teams    @relation("AwayTeam", fields: [away], references: [id])
+}
+
+model Feeds {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  title     String
+  content   String
+  createdAt DateTime @default(now())
+
+  likes    FeedLike[]
+  users    Users      @relation(fields: [userId], references: [id])
+  FeedTags FeedTags[]
+}
+
+model Tags {
+  id       Int        @id @default(autoincrement())
+  name     String
+  FeedTags FeedTags[]
+}
+
+model FeedTags {
+  id     Int @id @default(autoincrement())
+  feedId Int
+  tagId  Int
+
+  tags  Tags  @relation(fields: [tagId], references: [id])
+  feeds Feeds @relation(fields: [feedId], references: [id])
+}
+
+model FeedComments {
+  id        Int      @id @default(autoincrement())
+  feedId    Int
+  userId    Int
+  content   String
+  createdAt DateTime @default(now())
+
+  users Users @relation(fields: [userId], references: [id])
+}
+
+model Board {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  team      Int
+  title     String
+  content   String
+  createdAt DateTime @default(now())
+
+  thumbs BoardThumb[]
+  users  Users        @relation(fields: [userId], references: [id])
+}
+
+model BoardComments {
+  id        Int      @id @default(autoincrement())
+  boardId   Int
+  userId    Int
+  content   String
+  createdAt DateTime @default(now())
+
+  users Users @relation(fields: [userId], references: [id])
+}
+
+model FeedLike {
+  userId Int
+  feedId Int
+
+  users Users @relation(fields: [userId], references: [id])
+  feeds Feeds @relation(fields: [feedId], references: [id])
+
+  @@id([userId, feedId])
+}
+
+model BoardThumb {
+  userId  Int
+  boardId Int
+
+  users Users @relation(fields: [userId], references: [id])
+  board Board @relation(fields: [boardId], references: [id])
+
+  @@id([userId, boardId])
 }
