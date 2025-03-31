@@ -17,14 +17,15 @@ model Users {
   id            Int      @id @default(autoincrement())
   email         String   @unique
   name          String
-  nickname      String
+  password      String?
+  nickname      String?
   authProvider  String
-  profileUrl    String
-  team          Int
+  profileUrl    String?
+  team          Int      @default(0)
   createdAt     DateTime @default(now())
-  teamSeletedAt DateTime @default(now())
-  winningRate   Int
-  level         Int
+  teamSeletedAt DateTime?
+  winningRate   Int?
+  level         Int      @default(0)
 
   teams      Teams      @relation(fields: [team], references: [id])
   userlevels UserLevels @relation(fields: [level], references: [id])
@@ -64,7 +65,7 @@ model Stadium {
 }
 
 model GameSchedule {
-  id       Int      @id
+  id       Int      @id @default(autoincrement())
   home     Int
   away     Int
   stadium  Int
@@ -152,9 +153,3 @@ model BoardThumb {
   @@id([userId, boardId])
 }
 
-model Test {
-  id       Int    @id @default(autoincrement())
-  name     String
-  password String
-  email    String
-}
