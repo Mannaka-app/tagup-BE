@@ -151,3 +151,10 @@ model BoardThumb {
 
   @@id([userId, boardId])
 }
+
+model Test {
+  id       Int    @id @default(autoincrement())
+  name     String
+  password String
+  email    String
+}
