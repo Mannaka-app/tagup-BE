@@ -10,9 +10,17 @@ import * as bcrypt from 'bcrypt';
 import { LoginDto } from './dto/login.dto';
 import { JwtService } from '@nestjs/jwt';
 import { RedisService } from 'src/redis/redis.service';
+import * as jwksClient from 'jwks-rsa';
+import * as jwt from 'jsonwebtoken';
 
 @Injectable()
 export class AuthService {
+  private jwksClient = jwksClient({
+    jwksUri: 'https://kauth.kakao.com/.well-known/jwks.json',
+    cache: true,
+    rateLimit: true,
+  });
+
   constructor(
     private readonly prisma: PrismaService,
     private readonly jwt: JwtService,
@@ -94,6 +102,28 @@ export class AuthService {
     } catch (err) {
       if (err instanceof UnauthorizedException) throw err;
       throw new InternalServerErrorException('서버에서 오류가 발생했습니다.');
+    }
+  }
+
+  // 카카오 idToken 디코딩
+  async kakaoIdTokenDecode(idToken) {
+    try {
+      const decodedHeader = jwt.decode(idToken, { complete: true }) as jwt.Jwt;
+      const kid = decodedHeader.header.kid;
+
+      const key = await this.jwksClient.getSigningKey(kid);
+      const publicKey = key.getPublicKey();
+
+      const payload = jwt.verify(idToken, publicKey, {
+        algorithms: ['RS256'],
+        issuer: 'https://kauth.kakao.com',
+      }) as jwt.JwtPayload;
+
+      const kakaoId = payload.sub;
+      return kakaoId;
+    } catch (err) {
+      console.error('Kakao ID token verification failed:', err);
+      throw new UnauthorizedException('Invalid Kakao idToken');
     }
   }
 }

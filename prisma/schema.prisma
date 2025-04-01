@@ -17,7 +17,7 @@ model Users {
   id            Int       @id @default(autoincrement())
   email         String    @default("example@email.com")
   password      String?
-  sub           Int?
+  sub           Int?      @unique
   nickname      String?
   authProvider  String
   profileUrl    String?
