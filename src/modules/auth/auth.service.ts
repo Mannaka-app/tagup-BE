@@ -106,9 +106,12 @@ export class AuthService {
   }
 
   // 카카오 idToken 디코딩
-  async kakaoIdTokenDecode(idToken) {
+  async kakaoIdTokenDecode(data: { idToken: string }) {
     try {
-      const decodedHeader = jwt.decode(idToken, { complete: true }) as jwt.Jwt;
+      const { idToken } = data;
+      const decodedHeader = jwt.decode(idToken, {
+        complete: true,
+      }) as jwt.Jwt;
       const kid = decodedHeader.header.kid;
 
       const key = await this.jwksClient.getSigningKey(kid);
@@ -125,5 +128,45 @@ export class AuthService {
       console.error('Kakao ID token verification failed:', err);
       throw new UnauthorizedException('Invalid Kakao idToken');
     }
+  }
+
+  // 카카오 로그인 처리
+  async kakaoLogin(idToken) {
+    const sub = await this.kakaoIdTokenDecode(idToken);
+
+    let user = await this.prisma.users.findUnique({
+      where: { sub },
+    });
+
+    if (!user) {
+      user = await this.prisma.users.create({
+        data: { sub, authProvider: 'Kakao' },
+      });
+    }
+
+    const accessToken = this.jwt.sign(
+      { userId: user.id },
+      {
+        secret: process.env.JWT_ACCESS_SECRET,
+        expiresIn: '15m',
+      },
+    );
+
+    const refreshToken = this.jwt.sign(
+      { userId: user.id },
+      {
+        secret: process.env.JWT_REFRESH_SECRET,
+        expiresIn: '7d',
+      },
+    );
+
+    await this.redis.set(`refresh:${user.id}`, refreshToken, 60 * 60 * 24 * 7);
+
+    return {
+      success: true,
+      message: '카카오 로그인이 완료됐습니다',
+      accessToken,
+      refreshToken,
+    };
   }
 }

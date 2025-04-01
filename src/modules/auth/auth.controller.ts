@@ -16,4 +16,9 @@ export class AuthController {
   async login(@Body() loginDto: LoginDto) {
     return await this.authService.login(loginDto);
   }
+
+  @Post('kakao/login')
+  async kakaoLogin(@Body() idToken: any) {
+    return await this.authService.kakaoLogin(idToken);
+  }
 }
