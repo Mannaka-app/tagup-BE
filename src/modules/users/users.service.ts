@@ -10,6 +10,7 @@ import { Gender } from '@prisma/client';
 export class UsersService {
   constructor(private readonly prisma: PrismaService) {}
 
+  // 유저 추가 정보 설정 (닉네임, 성별)
   async setUserDetail(user, data) {
     const { userId } = user;
 
@@ -37,10 +38,12 @@ export class UsersService {
     }
   }
 
+  // 전체 팀 데이터 불러오기
   async getAllTeams() {
     return await this.prisma.teams.findMany({ where: { id: { gt: 0 } } });
   }
 
+  // 유저 응원 팀 설정
   async setUserTeam(user, teamId: number) {
     const { userId } = user;
 
