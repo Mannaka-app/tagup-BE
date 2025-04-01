@@ -68,33 +68,19 @@ export class AuthService {
       );
 
       if (validPassword) {
-        const accessToken = this.jwt.sign(
-          { userId: user.id },
-          {
-            secret: process.env.JWT_ACCESS_SECRET,
-            expiresIn: '15m',
-          },
-        );
-
-        const refreshToken = this.jwt.sign(
-          { userId: user.id },
-          {
-            secret: process.env.JWT_REFRESH_SECRET,
-            expiresIn: '7d',
-          },
-        );
+        const jwtTokens = await this.generateTokens(user.id);
 
         await this.redis.set(
           `refresh:${user.id}`,
-          refreshToken,
+          jwtTokens.refresh,
           60 * 60 * 24 * 7,
         );
 
         return {
           success: true,
           message: '로그인에 성공했습니다',
-          accessToken,
-          refreshToken,
+          accessToken: jwtTokens.access,
+          refreshToken: jwtTokens.refresh,
         };
       } else {
         throw new UnauthorizedException('비밀번호가 일치하지 않습니다.');
@@ -144,29 +130,40 @@ export class AuthService {
       });
     }
 
-    const accessToken = this.jwt.sign(
-      { userId: user.id },
+    const jwtTokens = await this.generateTokens(user.id);
+
+    await this.redis.set(
+      `refresh:${user.id}`,
+      jwtTokens.refresh,
+      60 * 60 * 24 * 7,
+    );
+
+    return {
+      success: true,
+      message: '카카오 로그인이 완료됐습니다',
+      accessToken: jwtTokens.access,
+      refreshToken: jwtTokens.refresh,
+    };
+  }
+
+  // 엑세스/리프레시 토큰 생성
+  async generateTokens(userId) {
+    const access = this.jwt.sign(
+      { userId: userId },
       {
         secret: process.env.JWT_ACCESS_SECRET,
         expiresIn: '15m',
       },
     );
 
-    const refreshToken = this.jwt.sign(
-      { userId: user.id },
+    const refresh = this.jwt.sign(
+      { userId: userId },
       {
         secret: process.env.JWT_REFRESH_SECRET,
         expiresIn: '7d',
       },
     );
 
-    await this.redis.set(`refresh:${user.id}`, refreshToken, 60 * 60 * 24 * 7);
-
-    return {
-      success: true,
-      message: '카카오 로그인이 완료됐습니다',
-      accessToken,
-      refreshToken,
-    };
+    return { access, refresh };
   }
 }
