@@ -39,4 +39,8 @@ export class UsersService {
       throw new InternalServerErrorException('서버에서 오류가 발생했습니다.');
     }
   }
+
+  async getAllTeams() {
+    return await this.prisma.teams.findMany({ where: { id: { gt: 0 } } });
+  }
 }
