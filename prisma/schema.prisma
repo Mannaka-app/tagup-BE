@@ -21,6 +21,7 @@ model Users {
   nickname      String?
   authProvider  String
   profileUrl    String?
+  gender        Gender?
   team          Int       @default(0)
   createdAt     DateTime  @default(now())
   teamSeletedAt DateTime?
@@ -36,6 +37,11 @@ model Users {
   FeedComments  FeedComments[]
   Board         Board[]
   BoardComments BoardComments[]
+}
+
+enum Gender {
+  MALE
+  FEMALE
 }
 
 model UserLevels {
