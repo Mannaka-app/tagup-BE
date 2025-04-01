@@ -9,12 +9,14 @@ import { RegisterDto } from './dto/register.dto';
 import * as bcrypt from 'bcrypt';
 import { LoginDto } from './dto/login.dto';
 import { JwtService } from '@nestjs/jwt';
+import { RedisService } from 'src/redis/redis.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly jwt: JwtService,
+    private readonly redis: RedisService,
   ) {}
 
   async register(registerDto: RegisterDto) {
@@ -73,6 +75,12 @@ export class AuthService {
             secret: process.env.JWT_REFRESH_SECRET,
             expiresIn: '7d',
           },
+        );
+
+        await this.redis.set(
+          `refresh:${user.id}`,
+          refreshToken,
+          60 * 60 * 24 * 7,
         );
 
         return {

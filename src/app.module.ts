@@ -12,6 +12,7 @@ import { ConfigModule } from '@nestjs/config';
     PrismaModule,
     RedisModule,
     ConfigModule.forRoot({ isGlobal: true }),
+    RedisModule,
   ],
   controllers: [AppController],
   providers: [AppService],
