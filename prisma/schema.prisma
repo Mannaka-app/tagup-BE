@@ -14,18 +14,18 @@ datasource db {
 }
 
 model Users {
-  id            Int      @id @default(autoincrement())
-  email         String   @unique
-  name          String
+  id            Int       @id @default(autoincrement())
+  email         String    @default("example@email.com")
   password      String?
+  sub           Int?
   nickname      String?
   authProvider  String
   profileUrl    String?
-  team          Int      @default(0)
-  createdAt     DateTime @default(now())
+  team          Int       @default(0)
+  createdAt     DateTime  @default(now())
   teamSeletedAt DateTime?
   winningRate   Int?
-  level         Int      @default(0)
+  level         Int       @default(0)
 
   teams      Teams      @relation(fields: [team], references: [id])
   userlevels UserLevels @relation(fields: [level], references: [id])
@@ -152,4 +152,3 @@ model BoardThumb {
 
   @@id([userId, boardId])
 }
-
