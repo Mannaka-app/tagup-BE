@@ -59,10 +59,28 @@ export class AuthService {
       );
 
       if (validPassword) {
-        const accessToken = this.jwt.sign({
-          userId: user.id,
-        });
-        return { success: true, message: '로그인에 성공했습니다', accessToken };
+        const accessToken = this.jwt.sign(
+          { userId: user.id },
+          {
+            secret: process.env.JWT_ACCESS_SECRET,
+            expiresIn: '15m',
+          },
+        );
+
+        const refreshToken = this.jwt.sign(
+          { userId: user.id },
+          {
+            secret: process.env.JWT_REFRESH_SECRET,
+            expiresIn: '7d',
+          },
+        );
+
+        return {
+          success: true,
+          message: '로그인에 성공했습니다',
+          accessToken,
+          refreshToken,
+        };
       } else {
         throw new UnauthorizedException('비밀번호가 일치하지 않습니다.');
       }
