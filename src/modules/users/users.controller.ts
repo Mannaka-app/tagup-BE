@@ -17,4 +17,10 @@ export class UsersController {
   async getAllteams() {
     return await this.usersService.getAllTeams();
   }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('teams')
+  async setUserTeam(@Req() req, @Body() data) {
+    return await this.usersService.setUserTeam(req.user, data.teamId);
+  }
 }

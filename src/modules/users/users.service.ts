@@ -41,6 +41,27 @@ export class UsersService {
     return await this.prisma.teams.findMany({ where: { id: { gt: 0 } } });
   }
 
+  async setUserTeam(user, teamId: number) {
+    const { userId } = user;
+
+    const exist = await this.getUserById(userId);
+    if (!exist) {
+      throw new UnauthorizedException('등록되지 않은 유저입니다.');
+    }
+
+    try {
+      await this.prisma.users.update({
+        where: { id: userId },
+        data: { team: teamId, teamSeletedAt: new Date() },
+      });
+
+      return { sucess: true, message: '응원 팀 설정이 완료됐습니다.' };
+    } catch (err) {
+      console.error(err);
+      throw new InternalServerErrorException('서버에서 오류가 발생했습니다.');
+    }
+  }
+
   async getUserById(userId: number) {
     const user = await this.prisma.users.findUnique({ where: { id: userId } });
 
