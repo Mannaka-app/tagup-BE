@@ -51,8 +51,10 @@ model UserLevels {
 }
 
 model Teams {
-  id   Int    @id @default(autoincrement())
-  name String
+  id    Int    @id @default(autoincrement())
+  name  String
+  color String?
+  emogi String?
 
   homeGames GameSchedule[] @relation("HomeTeam")
   awayGames GameSchedule[] @relation("AwayTeam")
