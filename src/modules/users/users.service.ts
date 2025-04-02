@@ -23,7 +23,7 @@ export class UsersService {
       const gender: Gender =
         data.gender == 'MALE' ? Gender.MALE : Gender.FEMALE;
 
-      await this.prisma.users.update({
+      const user = await this.prisma.users.update({
         where: { id: userId },
         data: {
           nickname: data.nickname,
@@ -31,7 +31,11 @@ export class UsersService {
         },
       });
 
-      return { success: true, message: '성별 및 닉네임 설정이 완료됐습니다.' };
+      return {
+        success: true,
+        message: '성별 및 닉네임 설정이 완료됐습니다.',
+        user,
+      };
     } catch (err) {
       console.error(err);
       throw new InternalServerErrorException('서버에서 오류가 발생했습니다.');
@@ -53,12 +57,12 @@ export class UsersService {
     }
 
     try {
-      await this.prisma.users.update({
+      const user = await this.prisma.users.update({
         where: { id: userId },
         data: { team: teamId, teamSeletedAt: new Date() },
       });
 
-      return { sucess: true, message: '응원 팀 설정이 완료됐습니다.' };
+      return { sucess: true, message: '응원 팀 설정이 완료됐습니다.', user };
     } catch (err) {
       console.error(err);
       throw new InternalServerErrorException('서버에서 오류가 발생했습니다.');
