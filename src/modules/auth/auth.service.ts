@@ -79,6 +79,7 @@ export class AuthService {
         return {
           success: true,
           message: '로그인에 성공했습니다',
+          user,
           accessToken: jwtTokens.access,
           refreshToken: jwtTokens.refresh,
         };
@@ -141,6 +142,7 @@ export class AuthService {
     return {
       success: true,
       message: '카카오 로그인이 완료됐습니다',
+      user,
       accessToken: jwtTokens.access,
       refreshToken: jwtTokens.refresh,
     };
