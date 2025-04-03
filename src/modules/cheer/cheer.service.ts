@@ -9,17 +9,15 @@ export class CheerService {
     private readonly usersService: UsersService,
   ) {}
 
-  async createCheerTalk(user, content: string) {
-    const { userId } = user;
-
-    const data = await this.usersService.getUserById(userId);
+  async createCheerTalk(userId: number, content: string) {
+    const user = await this.usersService.getUserById(userId);
 
     await this.prisma.cheerTalk.create({
       data: {
         userId,
         content,
         createdAt: new Date(),
-        team: data.team,
+        team: user.team,
       },
     });
 
