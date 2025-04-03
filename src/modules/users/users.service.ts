@@ -99,4 +99,14 @@ export class UsersService {
 
     return { success: true, message: '프로필 사진 변경이 완료됐습니다.', user };
   }
+
+  async deleteProfileImage(userId: number) {
+    const user = await this.prisma.users.update({
+      where: { id: userId },
+      data: { profileUrl: process.env.DEFAULT_PROFILE_URL },
+      include: { teams: true },
+    });
+
+    return { success: true, message: '프로필 사진이 삭제되었습니다.', user };
+  }
 }

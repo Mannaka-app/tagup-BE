@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Post,
   Put,
@@ -77,5 +78,11 @@ export class UsersController {
     @Body() data: { profileUrl: string },
   ) {
     return await this.usersService.updateProfileImage(userId, data.profileUrl);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Delete('profile-image')
+  async deleteProfileImage(@CurrentUserId() userId: number) {
+    return await this.usersService.deleteProfileImage(userId);
   }
 }
