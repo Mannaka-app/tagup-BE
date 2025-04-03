@@ -37,6 +37,8 @@ export const kakaoLoginDocs = {
           teamSeletedAt: '팀 설정 날짜',
           winningRate: '직관 승률',
           level: '유저 레벨',
+          active: '계정 활성화 여부',
+          isNew: '신규 가입 여부',
           teams: {
             id: '팀 id',
             name: '팀 이름',
