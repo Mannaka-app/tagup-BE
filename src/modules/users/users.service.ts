@@ -15,9 +15,7 @@ export class UsersService {
   ) {}
 
   // 유저 추가 정보 설정 (닉네임, 성별)
-  async setUserDetail(user, data) {
-    const { userId } = user;
-
+  async setUserDetail(userId: number, data) {
     const exist = await this.getUserById(userId);
     if (!exist) {
       throw new UnauthorizedException('등록되지 않은 유저입니다.');
@@ -53,9 +51,7 @@ export class UsersService {
   }
 
   // 유저 응원 팀 설정
-  async setUserTeam(user, teamId: number) {
-    const { userId } = user;
-
+  async setUserTeam(userId: number, teamId: number) {
     const exist = await this.getUserById(userId);
     if (!exist) {
       throw new UnauthorizedException('등록되지 않은 유저입니다.');

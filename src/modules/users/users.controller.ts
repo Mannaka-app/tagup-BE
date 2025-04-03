@@ -3,7 +3,6 @@ import {
   Controller,
   Get,
   Post,
-  Req,
   UploadedFile,
   UseGuards,
   UseInterceptors,
@@ -18,6 +17,7 @@ import {
 } from './docs/users.docs';
 import { ApiBearerAuth } from '@nestjs/swagger';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { CurrentUserId } from 'src/common/decorators/current-user-id.decorator';
 
 @Controller('users')
 export class UsersController {
@@ -30,8 +30,11 @@ export class UsersController {
   @setUserDetailDocs.ApiBody
   @setUserDetailDocs.ApiResponse
   @Post('detail')
-  async setUserDetail(@Req() req, @Body() userDetailDto: UserDetailDto) {
-    return await this.usersService.setUserDetail(req.user, userDetailDto);
+  async setUserDetail(
+    @CurrentUserId() userId: number,
+    @Body() userDetailDto: UserDetailDto,
+  ) {
+    return await this.usersService.setUserDetail(userId, userDetailDto);
   }
 
   // 전체 팀 데이터 불러오기
@@ -49,8 +52,8 @@ export class UsersController {
   @setUserTeamDocs.ApiBody
   @setUserTeamDocs.ApiResponse
   @Post('teams')
-  async setUserTeam(@Req() req, @Body() data) {
-    return await this.usersService.setUserTeam(req.user, data.teamId);
+  async setUserTeam(@CurrentUserId() userId: number, @Body() data) {
+    return await this.usersService.setUserTeam(userId, data.teamId);
   }
 
   // 유저 프로필 사진 등록
