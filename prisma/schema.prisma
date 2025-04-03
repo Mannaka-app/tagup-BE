@@ -32,12 +32,13 @@ model Users {
   teams      Teams      @relation(fields: [team], references: [id])
   userlevels UserLevels @relation(fields: [level], references: [id])
 
-  feedLikes     FeedLike[]
-  boardThumbs   BoardThumb[]
-  Feeds         Feeds[]
-  FeedComments  FeedComments[]
-  Board         Board[]
-  BoardComments BoardComments[]
+  feedLikes FeedLike[]
+
+  Feeds        Feeds[]
+  FeedComments FeedComments[]
+
+  CheerTalk      CheerTalk[]
+  CheerTalkLikes CheerTalkLikes[]
 }
 
 enum Gender {
@@ -132,26 +133,24 @@ model FeedComments {
   users Users @relation(fields: [userId], references: [id])
 }
 
-model Board {
+model CheerTalk {
   id        Int      @id @default(autoincrement())
   userId    Int
   team      Int
-  title     String
   content   String
   createdAt DateTime @default(now())
 
-  thumbs BoardThumb[]
-  users  Users        @relation(fields: [userId], references: [id])
+  users          Users            @relation(fields: [userId], references: [id])
+  CheerTalkLikes CheerTalkLikes[]
 }
 
-model BoardComments {
-  id        Int      @id @default(autoincrement())
-  boardId   Int
-  userId    Int
-  content   String
-  createdAt DateTime @default(now())
+model CheerTalkLikes {
+  id          Int @id @default(autoincrement())
+  cheerTalkId Int
+  userId      Int
 
-  users Users @relation(fields: [userId], references: [id])
+  users     Users     @relation(fields: [userId], references: [id])
+  cheerTalk CheerTalk @relation(fields: [cheerTalkId], references: [id])
 }
 
 model FeedLike {
@@ -162,14 +161,4 @@ model FeedLike {
   feeds Feeds @relation(fields: [feedId], references: [id])
 
   @@id([userId, feedId])
-}
-
-model BoardThumb {
-  userId  Int
-  boardId Int
-
-  users Users @relation(fields: [userId], references: [id])
-  board Board @relation(fields: [boardId], references: [id])
-
-  @@id([userId, boardId])
 }
