@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
 import { CheerService } from './cheer.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CurrentUserId } from 'src/common/decorators/current-user-id.decorator';
@@ -14,5 +14,11 @@ export class CheerController {
     @CurrentUserId() userId: number,
   ) {
     return await this.cheerService.createCheerTalk(userId, data.content);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get()
+  async getCheerTalks(@CurrentUserId() userId: number) {
+    return await this.cheerService.getCheerTalks(userId);
   }
 }
