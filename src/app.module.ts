@@ -8,6 +8,8 @@ import { ConfigModule } from '@nestjs/config';
 import { UsersModule } from './modules/users/users.module';
 import { JwtStrategy } from './modules/auth/strategies/jwt.strategy';
 import { GameModule } from './modules/games/games.module';
+import { S3Service } from './s3/s3.service';
+import { S3Module } from './s3/s3.module';
 
 @Module({
   imports: [
@@ -18,8 +20,9 @@ import { GameModule } from './modules/games/games.module';
     RedisModule,
     UsersModule,
     GameModule,
+    S3Module,
   ],
   controllers: [AppController],
-  providers: [AppService, JwtStrategy],
+  providers: [AppService, JwtStrategy, S3Service],
 })
 export class AppModule {}
