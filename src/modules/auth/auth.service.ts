@@ -67,6 +67,8 @@ export class AuthService {
         user.password,
       );
 
+      const isNew = user.gender && user.nickname && user.team ? false : true;
+
       if (validPassword) {
         const jwtTokens = await this.generateTokens(user.id);
 
@@ -79,7 +81,7 @@ export class AuthService {
         return {
           success: true,
           message: '로그인에 성공했습니다',
-          user,
+          user: { ...user, isNew },
           accessToken: jwtTokens.access,
           refreshToken: jwtTokens.refresh,
         };
@@ -133,6 +135,8 @@ export class AuthService {
       });
     }
 
+    const isNew = user.gender && user.nickname && user.team;
+
     const jwtTokens = await this.generateTokens(user.id);
 
     await this.redis.set(
@@ -144,7 +148,7 @@ export class AuthService {
     return {
       success: true,
       message: '카카오 로그인이 완료됐습니다',
-      user,
+      user: { ...user, isNew },
       accessToken: jwtTokens.access,
       refreshToken: jwtTokens.refresh,
     };
