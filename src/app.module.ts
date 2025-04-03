@@ -10,6 +10,7 @@ import { JwtStrategy } from './modules/auth/strategies/jwt.strategy';
 import { GameModule } from './modules/games/games.module';
 import { S3Service } from './s3/s3.service';
 import { S3Module } from './s3/s3.module';
+import { CheerModule } from './cheer/cheer.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { S3Module } from './s3/s3.module';
     UsersModule,
     GameModule,
     S3Module,
+    CheerModule,
   ],
   controllers: [AppController],
   providers: [AppService, JwtStrategy, S3Service],
