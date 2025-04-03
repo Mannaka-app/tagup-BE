@@ -27,6 +27,7 @@ model Users {
   teamSeletedAt DateTime?
   winningRate   Int?
   level         Int       @default(0)
+  active        Boolean   @default(true)
 
   teams      Teams      @relation(fields: [team], references: [id])
   userlevels UserLevels @relation(fields: [level], references: [id])
@@ -77,6 +78,8 @@ model GameSchedule {
   away     Int
   stadium  Int
   date     DateTime @default(now())
+  score    String
+  win      Int
   homeTeam Teams    @relation("HomeTeam", fields: [home], references: [id])
   awayTeam Teams    @relation("AwayTeam", fields: [away], references: [id])
 }
