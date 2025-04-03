@@ -6,6 +6,7 @@ import {
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Gender } from '@prisma/client';
 import { S3Service } from 'src/s3/s3.service';
+import { UserDetailDto } from './dto/userDetail.dto';
 
 @Injectable()
 export class UsersService {
@@ -15,7 +16,7 @@ export class UsersService {
   ) {}
 
   // 유저 추가 정보 설정 (닉네임, 성별)
-  async setUserDetail(userId: number, data) {
+  async setUserDetail(userId: number, userDetailDto: UserDetailDto) {
     const exist = await this.getUserById(userId);
     if (!exist) {
       throw new UnauthorizedException('등록되지 않은 유저입니다.');
@@ -23,12 +24,12 @@ export class UsersService {
 
     try {
       const gender: Gender =
-        data.gender == 'MALE' ? Gender.MALE : Gender.FEMALE;
+        userDetailDto.gender == 'MALE' ? Gender.MALE : Gender.FEMALE;
 
       const user = await this.prisma.users.update({
         where: { id: userId },
         data: {
-          nickname: data.nickname,
+          nickname: userDetailDto.nickname,
           gender: gender,
         },
         include: { teams: true },
