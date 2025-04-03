@@ -7,6 +7,7 @@ import { RedisModule } from './redis/redis.module';
 import { ConfigModule } from '@nestjs/config';
 import { UsersModule } from './modules/users/users.module';
 import { JwtStrategy } from './modules/auth/strategies/jwt.strategy';
+import { GameModule } from './game/game.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { JwtStrategy } from './modules/auth/strategies/jwt.strategy';
     ConfigModule.forRoot({ isGlobal: true }),
     RedisModule,
     UsersModule,
+    GameModule,
   ],
   controllers: [AppController],
   providers: [AppService, JwtStrategy],
