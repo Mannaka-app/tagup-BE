@@ -29,6 +29,7 @@ export class UsersService {
           nickname: data.nickname,
           gender: gender,
         },
+        include: { teams: true },
       });
 
       return {
@@ -60,6 +61,7 @@ export class UsersService {
       const user = await this.prisma.users.update({
         where: { id: userId },
         data: { team: teamId, teamSeletedAt: new Date() },
+        include: { teams: true },
       });
 
       return { sucess: true, message: '응원 팀 설정이 완료됐습니다.', user };
