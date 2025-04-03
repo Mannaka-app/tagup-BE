@@ -5,10 +5,14 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Gender } from '@prisma/client';
+import { S3Service } from 'src/s3/s3.service';
 
 @Injectable()
 export class UsersService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly s3: S3Service,
+  ) {}
 
   // 유저 추가 정보 설정 (닉네임, 성별)
   async setUserDetail(user, data) {
@@ -69,6 +73,18 @@ export class UsersService {
       console.error(err);
       throw new InternalServerErrorException('서버에서 오류가 발생했습니다.');
     }
+  }
+
+  async uploadProfileImage(file: Express.Multer.File) {
+    const fileType = file.mimetype.split('/')[1];
+    const imageUrl = await this.s3.uploadImage(
+      8,
+      file.buffer,
+      fileType,
+      'profile/',
+    );
+
+    return { success: true, imageUrl };
   }
 
   async getUserById(userId: number) {
