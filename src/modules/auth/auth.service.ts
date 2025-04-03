@@ -44,6 +44,7 @@ export class AuthService {
           email: registerDto.email,
           password: hashedPassword,
           authProvider: 'Tagup',
+          profileUrl: process.env.DEFAULT_PROFILE_URL,
         },
       });
 
@@ -131,7 +132,11 @@ export class AuthService {
 
     if (!user) {
       user = await this.prisma.users.create({
-        data: { sub, authProvider: 'Kakao' },
+        data: {
+          sub,
+          authProvider: 'Kakao',
+          profileUrl: process.env.DEFAULT_PROFILE_URL,
+        },
         include: { teams: true },
       });
     }
