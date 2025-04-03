@@ -7,7 +7,7 @@ import { RedisModule } from './redis/redis.module';
 import { ConfigModule } from '@nestjs/config';
 import { UsersModule } from './modules/users/users.module';
 import { JwtStrategy } from './modules/auth/strategies/jwt.strategy';
-import { GameModule } from './game/game.module';
+import { GameModule } from './modules/games/games.module';
 
 @Module({
   imports: [
