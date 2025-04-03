@@ -3,6 +3,7 @@ import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { kakaoLoginDocs } from './docs/auth.docs';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
 @Controller('auth')
 export class AuthController {
@@ -19,6 +20,7 @@ export class AuthController {
   }
 
   @Post('kakao/login')
+  @ApiBearerAuth()
   @kakaoLoginDocs.ApiOperation
   @kakaoLoginDocs.ApiBody
   @kakaoLoginDocs.ApiResponse
