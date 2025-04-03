@@ -14,6 +14,7 @@ import {
   getAllTeamsDocs,
   setUserDetailDocs,
   setUserTeamDocs,
+  uploadProfileImageDocs,
 } from './docs/users.docs';
 import { ApiBearerAuth } from '@nestjs/swagger';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -59,6 +60,10 @@ export class UsersController {
   // 유저 프로필 사진 등록
   @Post('image')
   @UseInterceptors(FileInterceptor('file'))
+  @uploadProfileImageDocs.ApiOperation
+  @uploadProfileImageDocs.ApiConsumes
+  @uploadProfileImageDocs.ApiBody
+  @uploadProfileImageDocs.ApiResponse
   async uploadProfileImage(@UploadedFile() file: Express.Multer.File) {
     return await this.usersService.uploadProfileImage(file);
   }

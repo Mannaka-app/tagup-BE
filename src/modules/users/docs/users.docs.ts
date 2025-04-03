@@ -1,4 +1,9 @@
-import { ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import {
+  ApiBody,
+  ApiConsumes,
+  ApiOperation,
+  ApiResponse,
+} from '@nestjs/swagger';
 
 export const setUserDetailDocs = {
   ApiOperation: ApiOperation({
@@ -117,6 +122,38 @@ export const setUserTeamDocs = {
             emogi: '팀 이모지',
           },
         },
+      },
+    },
+  }),
+};
+
+export const uploadProfileImageDocs = {
+  ApiOperation: ApiOperation({
+    summary: '이미지 업로드',
+    description: '이미지 업로드 시 이미지 링크를 반환합니다',
+  }),
+
+  ApiConsumes: ApiConsumes('multipart/form-data'),
+  ApiBody: ApiBody({
+    description: '업로드할 이미지 파일',
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+        },
+      },
+    },
+  }),
+
+  ApiResponse: ApiResponse({
+    status: 201,
+    description: '이미지 업로드 성공',
+    schema: {
+      example: {
+        success: true,
+        imageUrl: '이미지 url',
       },
     },
   }),
