@@ -58,6 +58,7 @@ export class AuthService {
     try {
       const user = await this.prisma.users.findFirst({
         where: { email: loginDto.email },
+        include: { teams: true },
       });
 
       if (!user) throw new UnauthorizedException('계정이 존재하지 않습니다.');
