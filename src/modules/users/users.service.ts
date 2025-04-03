@@ -89,4 +89,14 @@ export class UsersService {
 
     return user;
   }
+
+  async updateProfileImage(userId: number, profileUrl: string) {
+    const user = await this.prisma.users.update({
+      where: { id: userId },
+      data: { profileUrl },
+      include: { teams: true },
+    });
+
+    return { success: true, message: '프로필 사진 변경이 완료됐습니다.', user };
+  }
 }

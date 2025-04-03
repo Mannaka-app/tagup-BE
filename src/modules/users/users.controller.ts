@@ -3,6 +3,7 @@ import {
   Controller,
   Get,
   Post,
+  Put,
   UploadedFile,
   UseGuards,
   UseInterceptors,
@@ -66,5 +67,15 @@ export class UsersController {
   @uploadProfileImageDocs.ApiResponse
   async uploadProfileImage(@UploadedFile() file: Express.Multer.File) {
     return await this.usersService.uploadProfileImage(file);
+  }
+
+  // 프로필 사진 변경
+  @UseGuards(JwtAuthGuard)
+  @Put('profile-image')
+  async updateProfileImage(
+    @CurrentUserId() userId: number,
+    @Body() data: { profileUrl: string },
+  ) {
+    return await this.usersService.updateProfileImage(userId, data.profileUrl);
   }
 }
