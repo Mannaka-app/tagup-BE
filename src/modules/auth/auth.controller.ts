@@ -2,6 +2,7 @@ import { Body, Controller, Post } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
+import { kakaoLoginDocs } from './docs/auth.docs';
 
 @Controller('auth')
 export class AuthController {
@@ -18,6 +19,9 @@ export class AuthController {
   }
 
   @Post('kakao/login')
+  @kakaoLoginDocs.ApiOperation
+  @kakaoLoginDocs.ApiBody
+  @kakaoLoginDocs.ApiResponse
   async kakaoLogin(@Body() idToken: any) {
     return await this.authService.kakaoLogin(idToken);
   }
