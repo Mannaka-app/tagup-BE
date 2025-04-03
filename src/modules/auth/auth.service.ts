@@ -123,11 +123,13 @@ export class AuthService {
 
     let user = await this.prisma.users.findUnique({
       where: { sub },
+      include: { teams: true },
     });
 
     if (!user) {
       user = await this.prisma.users.create({
         data: { sub, authProvider: 'Kakao' },
+        include: { teams: true },
       });
     }
 

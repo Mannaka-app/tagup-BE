@@ -37,6 +37,12 @@ export const kakaoLoginDocs = {
           teamSeletedAt: '팀 설정 날짜',
           winningRate: '직관 승률',
           level: '유저 레벨',
+          teams: {
+            id: '팀 id',
+            name: '팀 이름',
+            color: '팀 컬러',
+            emogi: '팀 이모지',
+          },
         },
         accessToken: '액세스 토큰',
         refreshToken: '리프레시 토큰',
