@@ -70,18 +70,29 @@ model Stadium {
   homeTeam Int
 
   teams Teams @relation(fields: [homeTeam], references: [id])
+
+  GameSchedule GameSchedule[]
 }
 
 model GameSchedule {
-  id       Int      @id @default(autoincrement())
-  home     Int
-  away     Int
-  stadium  Int
-  date     DateTime @default(now())
-  score    String
-  win      Int
-  homeTeam Teams    @relation("HomeTeam", fields: [home], references: [id])
-  awayTeam Teams    @relation("AwayTeam", fields: [away], references: [id])
+  id          Int        @id @default(autoincrement())
+  home        Int
+  away        Int
+  stadium     Int
+  date        DateTime   @default(now())
+  score       String
+  win         Int
+  status      GameStatus @default(SCHEDULED)
+  homeTeam    Teams      @relation("HomeTeam", fields: [home], references: [id])
+  awayTeam    Teams      @relation("AwayTeam", fields: [away], references: [id])
+  stadiumInfo Stadium    @relation(fields: [stadium], references: [id])
+}
+
+enum GameStatus {
+  SCHEDULED
+  ONGOING
+  FINISHED
+  CANCELLED
 }
 
 model Feeds {
