@@ -43,7 +43,7 @@ export const kakaoLoginDocs = {
             id: '팀 id',
             name: '팀 이름',
             color: '팀 컬러',
-            emogi: '팀 이모지',
+            emoji: '팀 이모지',
           },
         },
         accessToken: '액세스 토큰',

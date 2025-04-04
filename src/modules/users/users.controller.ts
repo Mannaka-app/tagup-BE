@@ -13,9 +13,11 @@ import { UsersService } from './users.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { UserDetailDto } from './dto/userDetail.dto';
 import {
+  deleteProfileImageDocs,
   getAllTeamsDocs,
   setUserDetailDocs,
   setUserTeamDocs,
+  updateProfileImageDocs,
   uploadProfileImageDocs,
 } from './docs/users.docs';
 import { ApiBearerAuth } from '@nestjs/swagger';
@@ -73,6 +75,10 @@ export class UsersController {
   // 프로필 사진 변경
   @UseGuards(JwtAuthGuard)
   @Put('profile-image')
+  @ApiBearerAuth()
+  @updateProfileImageDocs.ApiOperation
+  @updateProfileImageDocs.ApiBody
+  @updateProfileImageDocs.ApiResponse
   async updateProfileImage(
     @CurrentUserId() userId: number,
     @Body() data: { profileUrl: string },
@@ -82,6 +88,9 @@ export class UsersController {
 
   @UseGuards(JwtAuthGuard)
   @Delete('profile-image')
+  @ApiBearerAuth()
+  @deleteProfileImageDocs.ApiOperation
+  @deleteProfileImageDocs.ApiResponse
   async deleteProfileImage(@CurrentUserId() userId: number) {
     return await this.usersService.deleteProfileImage(userId);
   }

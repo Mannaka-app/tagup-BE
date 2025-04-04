@@ -48,7 +48,7 @@ export const setUserDetailDocs = {
             id: '팀 id',
             name: '팀 이름',
             color: '팀 컬러',
-            emogi: '팀 이모지',
+            emoji: '팀 이모지',
           },
         },
       },
@@ -119,7 +119,7 @@ export const setUserTeamDocs = {
             id: '팀 id',
             name: '팀 이름',
             color: '팀 컬러',
-            emogi: '팀 이모지',
+            emoji: '팀 이모지',
           },
         },
       },
@@ -154,6 +154,92 @@ export const uploadProfileImageDocs = {
       example: {
         success: true,
         imageUrl: '이미지 url',
+      },
+    },
+  }),
+};
+
+export const updateProfileImageDocs = {
+  ApiOperation: ApiOperation({
+    summary: '유저 프로필 사진 변경',
+  }),
+  ApiBody: ApiBody({
+    description: '사진 url',
+    schema: {
+      type: 'object',
+      properties: {
+        profileUrl: { type: 'string', description: 'string' },
+      },
+    },
+  }),
+  ApiResponse: ApiResponse({
+    status: 200,
+    description: '프로필 사진 변경 완료',
+    schema: {
+      example: {
+        success: true,
+        message: '프로필 사진 변경이 완료됐습니다.',
+        user: {
+          id: '유저 아이디',
+          email: '유저 이메일',
+          password: '유저 비밀번호',
+          sub: '유저 카카오 id',
+          nickname: '유저 닉네임',
+          authProvider: '사용한 Oauth',
+          profileUrl: '프로필 url',
+          gender: '성별',
+          team: '응원 팀 id',
+          createdAt: '가입 날짜',
+          teamSeletedAt: '팀 설정 날짜',
+          winningRate: '직관 승률',
+          level: '유저 레벨',
+          active: '계정 활성화 여부',
+          teams: {
+            id: '팀 id',
+            name: '팀 이름',
+            color: '팀 컬러',
+            emoji: '팀 이모지',
+          },
+        },
+      },
+    },
+  }),
+};
+
+export const deleteProfileImageDocs = {
+  ApiOperation: ApiOperation({
+    summary: '유저 프로필 사진 삭제',
+    description: '기본 프로필 이미지로 변경됩니다.',
+  }),
+  ApiResponse: ApiResponse({
+    status: 200,
+    description: '프로필 사진 삭제 완료',
+    schema: {
+      example: {
+        success: true,
+        message: '프로필 사진이 삭제되었습니다.',
+        user: {
+          id: '유저 아이디',
+          email: '유저 이메일',
+          password: '유저 비밀번호',
+          sub: '유저 카카오 id',
+          nickname: '유저 닉네임',
+          authProvider: '사용한 Oauth',
+          profileUrl: '프로필 url',
+          gender: '성별',
+          team: '응원 팀 id',
+          createdAt: '가입 날짜',
+          teamSeletedAt: '팀 설정 날짜',
+          winningRate: '직관 승률',
+          level: '유저 레벨',
+          active: '계정 활성화 여부',
+          teams: {
+            id: '팀 id',
+            name: '팀 이름',
+            color: '팀 컬러',
+            emoji: '팀 이모지',
+          },
+        },
       },
     },
   }),
