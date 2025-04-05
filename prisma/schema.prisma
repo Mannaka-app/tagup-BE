@@ -151,6 +151,8 @@ model CheerTalkLikes {
 
   users     Users     @relation(fields: [userId], references: [id])
   cheerTalk CheerTalk @relation(fields: [cheerTalkId], references: [id])
+
+  @@unique([userId, cheerTalkId])
 }
 
 model FeedLike {
