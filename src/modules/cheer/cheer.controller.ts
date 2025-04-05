@@ -3,6 +3,7 @@ import { CheerService } from './cheer.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CurrentUserId } from 'src/common/decorators/current-user-id.decorator';
 import { PaginationQueryDto } from './dto/paginationQuery.dto';
+import { createCheerTalkDocs, getCheerTalksDocs } from './docs/cheer.docs';
 
 @Controller('cheer')
 export class CheerController {
@@ -10,6 +11,10 @@ export class CheerController {
 
   @UseGuards(JwtAuthGuard)
   @Post()
+  @createCheerTalkDocs.ApiOperation
+  @createCheerTalkDocs.ApiBearerAuth
+  @createCheerTalkDocs.ApiBody
+  @createCheerTalkDocs.ApiResponse
   async createCheerTalk(
     @Body() data: { content: string },
     @CurrentUserId() userId: number,
@@ -19,6 +24,11 @@ export class CheerController {
 
   @UseGuards(JwtAuthGuard)
   @Get()
+  @getCheerTalksDocs.ApiOperation
+  @getCheerTalksDocs.ApiBearerAuth
+  @getCheerTalksDocs.ApiQuery1
+  @getCheerTalksDocs.ApiQuery2
+  @getCheerTalksDocs.ApiResponse
   async getCheerTalks(
     @CurrentUserId() userId: number,
     @Query() paginationQueryDto: PaginationQueryDto,
