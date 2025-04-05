@@ -56,6 +56,7 @@ export class CheerService {
       content: res.content,
       createdAt: res.createdAt,
       likes: res.CheerTalkLikes.length,
+      isLiked: res.CheerTalkLikes.filter((res) => res.userId == userId).length,
     }));
 
     const lastCursor = cheerTalks[cheerTalks.length - 1]?.id || null;

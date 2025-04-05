@@ -74,6 +74,7 @@ export const getCheerTalksDocs = {
             content: '응원 내용',
             createdAt: '작성 일자',
             likes: 0,
+            isLiked: '유저 좋아요 여부',
           },
           {
             id: '응원 id',
@@ -84,6 +85,7 @@ export const getCheerTalksDocs = {
             content: '응원 내용',
             createdAt: '작성 일자',
             likes: 0,
+            isLiked: '유저 좋아요 여부',
           },
         ],
         lastCursor: '라스트 커서',
