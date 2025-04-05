@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Injectable,
   InternalServerErrorException,
   UnauthorizedException,
@@ -40,15 +41,20 @@ export class UsersService {
         message: '성별 및 닉네임 설정이 완료됐습니다.',
         user,
       };
-    } catch (err) {
-      console.error(err);
+    } catch (error) {
+      console.error(error);
       throw new InternalServerErrorException('서버에서 오류가 발생했습니다.');
     }
   }
 
   // 전체 팀 데이터 불러오기
   async getAllTeams() {
-    return await this.prisma.teams.findMany({ where: { id: { gt: 0 } } });
+    try {
+      return await this.prisma.teams.findMany({ where: { id: { gt: 0 } } });
+    } catch (error) {
+      console.error(error);
+      throw new InternalServerErrorException('서버에서 오류가 발생했습니다.');
+    }
   }
 
   // 유저 응원 팀 설정
@@ -66,22 +72,32 @@ export class UsersService {
       });
 
       return { sucess: true, message: '응원 팀 설정이 완료됐습니다.', user };
-    } catch (err) {
-      console.error(err);
+    } catch (error) {
+      console.error(error);
       throw new InternalServerErrorException('서버에서 오류가 발생했습니다.');
     }
   }
 
   async uploadProfileImage(file: Express.Multer.File) {
-    const fileType = file.mimetype.split('/')[1];
-    const imageUrl = await this.s3.uploadImage(
-      8,
-      file.buffer,
-      fileType,
-      'profile/',
-    );
+    try {
+      const fileType = file.mimetype.split('/')[1];
 
-    return { success: true, imageUrl };
+      if (!fileType) {
+        throw new BadRequestException('유효하지 않은 파일 형식입니다.');
+      }
+
+      const imageUrl = await this.s3.uploadImage(
+        8,
+        file.buffer,
+        fileType,
+        'profile/',
+      );
+
+      return { success: true, imageUrl };
+    } catch (error) {
+      console.error('이미지 업로드 중 오류 발생', error);
+      throw new InternalServerErrorException('이미지 업로드에 실패했습니다.');
+    }
   }
 
   async getUserById(userId: number) {
@@ -91,22 +107,36 @@ export class UsersService {
   }
 
   async updateProfileImage(userId: number, profileUrl: string) {
-    const user = await this.prisma.users.update({
-      where: { id: userId },
-      data: { profileUrl },
-      include: { teams: true },
-    });
+    try {
+      const user = await this.prisma.users.update({
+        where: { id: userId },
+        data: { profileUrl },
+        include: { teams: true },
+      });
 
-    return { success: true, message: '프로필 사진 변경이 완료됐습니다.', user };
+      return {
+        success: true,
+        message: '프로필 사진 변경이 완료됐습니다.',
+        user,
+      };
+    } catch (error) {
+      console.error(error);
+      throw new InternalServerErrorException('서버에서 오류가 발생했습니다.');
+    }
   }
 
   async deleteProfileImage(userId: number) {
-    const user = await this.prisma.users.update({
-      where: { id: userId },
-      data: { profileUrl: process.env.DEFAULT_PROFILE_URL },
-      include: { teams: true },
-    });
+    try {
+      const user = await this.prisma.users.update({
+        where: { id: userId },
+        data: { profileUrl: process.env.DEFAULT_PROFILE_URL },
+        include: { teams: true },
+      });
 
-    return { success: true, message: '프로필 사진이 삭제되었습니다.', user };
+      return { success: true, message: '프로필 사진이 삭제되었습니다.', user };
+    } catch (error) {
+      console.error(error);
+      throw new InternalServerErrorException('서버에서 오류가 발생했습니다.');
+    }
   }
 }
