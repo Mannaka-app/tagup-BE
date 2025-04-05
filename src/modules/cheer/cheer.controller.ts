@@ -15,6 +15,7 @@ import {
   likesHanderDocs,
   createCheerTalkDocs,
   getCheerTalksDocs,
+  deleteCheerTalkDocs,
 } from './docs/cheer.docs';
 
 @Controller('cheer')
@@ -64,6 +65,10 @@ export class CheerController {
 
   @UseGuards(JwtAuthGuard)
   @Delete()
+  @deleteCheerTalkDocs.ApiOperation
+  @deleteCheerTalkDocs.ApiBearerAuth
+  @deleteCheerTalkDocs.ApiBody
+  @deleteCheerTalkDocs.ApiResponse
   async deleteCheerTalk(
     @CurrentUserId() userId: number,
     @Body() data: { cheerTalkId: number },

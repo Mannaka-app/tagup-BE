@@ -138,3 +138,33 @@ export const likesHanderDocs = {
     },
   }),
 };
+
+export const deleteCheerTalkDocs = {
+  ApiOperation: ApiOperation({
+    summary: '응원 삭제',
+    description: '사용자가 작성한 응원을 삭제합니다.',
+  }),
+  ApiBearerAuth: ApiBearerAuth(),
+  ApiBody: ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        cheerTalkId: {
+          type: 'number',
+          example: 1,
+          description: '삭제할 응원 ID',
+        },
+      },
+    },
+  }),
+  ApiResponse: ApiResponse({
+    status: 200,
+    description: '응원 삭제 성공',
+    schema: {
+      example: {
+        success: true,
+        message: '응원이 성공적으로 삭제되었습니다.',
+      },
+    },
+  }),
+};
