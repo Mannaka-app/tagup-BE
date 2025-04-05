@@ -3,7 +3,11 @@ import { CheerService } from './cheer.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CurrentUserId } from 'src/common/decorators/current-user-id.decorator';
 import { PaginationQueryDto } from './dto/paginationQuery.dto';
-import { createCheerTalkDocs, getCheerTalksDocs } from './docs/cheer.docs';
+import {
+  likesHanderDocs,
+  createCheerTalkDocs,
+  getCheerTalksDocs,
+} from './docs/cheer.docs';
 
 @Controller('cheer')
 export class CheerController {
@@ -38,6 +42,11 @@ export class CheerController {
 
   @UseGuards(JwtAuthGuard)
   @Post('likes')
+  @likesHanderDocs.ApiOperation
+  @likesHanderDocs.ApiBearerAuth
+  @likesHanderDocs.ApiBody
+  @likesHanderDocs.ApiResponseAdd
+  @likesHanderDocs.ApiResponseRemove
   async likesHandler(
     @CurrentUserId() userId: number,
     @Body() data: { cheerTalkId: number },

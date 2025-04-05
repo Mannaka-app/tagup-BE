@@ -93,3 +93,48 @@ export const getCheerTalksDocs = {
     },
   }),
 };
+
+export const likesHanderDocs = {
+  ApiOperation: ApiOperation({
+    summary: '응원 좋아요 추가/제거',
+    description:
+      '응원에 대해 좋아요를 추가하거나 제거합니다. 이미 좋아요가 되어 있다면 제거됩니다.',
+  }),
+
+  ApiBearerAuth: ApiBearerAuth(),
+
+  ApiBody: ApiBody({
+    description: '좋아요 토글할 응원 ID',
+    schema: {
+      type: 'object',
+      properties: {
+        cheerTalkId: {
+          type: 'number',
+          example: 1,
+        },
+      },
+    },
+  }),
+
+  ApiResponseAdd: ApiResponse({
+    status: 200,
+    description: '좋아요 추가 성공',
+    schema: {
+      example: {
+        success: true,
+        message: '좋아요가 추가 되었습니다.',
+      },
+    },
+  }),
+
+  ApiResponseRemove: ApiResponse({
+    status: 200,
+    description: '좋아요 제거 성공',
+    schema: {
+      example: {
+        success: true,
+        message: '좋아요가 제거 되었습니다.',
+      },
+    },
+  }),
+};
