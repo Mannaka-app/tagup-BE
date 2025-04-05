@@ -1,7 +1,8 @@
-import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
 import { CheerService } from './cheer.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CurrentUserId } from 'src/common/decorators/current-user-id.decorator';
+import { PaginationQueryDto } from './dto/paginationQuery.dto';
 
 @Controller('cheer')
 export class CheerController {
@@ -18,7 +19,10 @@ export class CheerController {
 
   @UseGuards(JwtAuthGuard)
   @Get()
-  async getCheerTalks(@CurrentUserId() userId: number) {
-    return await this.cheerService.getCheerTalks(userId);
+  async getCheerTalks(
+    @CurrentUserId() userId: number,
+    @Query() paginationQueryDto: PaginationQueryDto,
+  ) {
+    return await this.cheerService.getCheerTalks(userId, paginationQueryDto);
   }
 }

@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UsersService } from '../users/users.service';
+import { PaginationQueryDto } from './dto/paginationQuery.dto';
 
 @Injectable()
 export class CheerService {
@@ -24,17 +25,20 @@ export class CheerService {
     return { success: true, message: '응원 등록이 완료됐습니다.' };
   }
 
-  async getCheerTalks(userId: number) {
+  async getCheerTalks(userId: number, paginationQueryDto: PaginationQueryDto) {
+    const { cursor = 0, limit = 10 } = paginationQueryDto;
+
     const user = await this.usersService.getUserById(userId);
 
     const result = await this.prisma.cheerTalk.findMany({
-      where: { team: user.team },
+      orderBy: { id: 'desc' },
+      where: { team: user.team, ...(cursor && { id: { lt: cursor } }) },
+      take: limit,
       include: {
         users: {
           select: {
             nickname: true,
             profileUrl: true,
-            gender: true,
             level: true,
           },
         },
@@ -47,7 +51,6 @@ export class CheerService {
       userId: res.userId,
       nickname: res.users.nickname,
       profileUrl: res.users.profileUrl,
-      gender: res.users.gender,
       userLevel: res.users.level,
       content: res.content,
       createdAt: res.createdAt,
