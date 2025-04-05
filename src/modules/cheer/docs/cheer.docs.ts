@@ -63,28 +63,31 @@ export const getCheerTalksDocs = {
     status: 200,
     description: '응원 목록 조회 성공',
     schema: {
-      example: [
-        {
-          id: '응원 id',
-          userId: '작성한 유저 id',
-          nickname: '유저 닉네임',
-          profileUrl: '유저 프로필 url',
-          userLevel: '유저 레벨',
-          content: '응원 내용',
-          createdAt: '작성 일자',
-          likes: 0,
-        },
-        {
-          id: '응원 id',
-          userId: '작성한 유저 id',
-          nickname: '유저 닉네임',
-          profileUrl: '유저 프로필 url',
-          userLevel: '유저 레벨',
-          content: '응원 내용',
-          createdAt: '작성 일자',
-          likes: 0,
-        },
-      ],
+      example: {
+        cheerTalks: [
+          {
+            id: '응원 id',
+            userId: '작성한 유저 id',
+            nickname: '유저 닉네임',
+            profileUrl: '유저 프로필 url',
+            userLevel: '유저 레벨',
+            content: '응원 내용',
+            createdAt: '작성 일자',
+            likes: 0,
+          },
+          {
+            id: '응원 id',
+            userId: '작성한 유저 id',
+            nickname: '유저 닉네임',
+            profileUrl: '유저 프로필 url',
+            userLevel: '유저 레벨',
+            content: '응원 내용',
+            createdAt: '작성 일자',
+            likes: 0,
+          },
+        ],
+        lastCursor: '라스트 커서',
+      },
     },
   }),
 };

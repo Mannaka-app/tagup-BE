@@ -57,6 +57,8 @@ export class CheerService {
       likes: res.CheerTalkLikes.length,
     }));
 
-    return cheerTalks;
+    const lastCursor = cheerTalks[cheerTalks.length - 1]?.id || null;
+
+    return { cheerTalks, lastCursor };
   }
 }
