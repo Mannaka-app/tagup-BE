@@ -35,4 +35,13 @@ export class CheerController {
   ) {
     return await this.cheerService.getCheerTalks(userId, paginationQueryDto);
   }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('likes')
+  async likesHandler(
+    @CurrentUserId() userId: number,
+    @Body() data: { cheerTalkId: number },
+  ) {
+    return await this.cheerService.likesHander(userId, data.cheerTalkId);
+  }
 }
