@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Post,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { CheerService } from './cheer.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CurrentUserId } from 'src/common/decorators/current-user-id.decorator';
@@ -52,5 +60,14 @@ export class CheerController {
     @Body() data: { cheerTalkId: number },
   ) {
     return await this.cheerService.likesHander(userId, data.cheerTalkId);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Delete()
+  async deleteCheerTalk(
+    @CurrentUserId() userId: number,
+    @Body() data: { cheerTalkId: number },
+  ) {
+    return await this.cheerService.deleteCheerTalk(userId, data.cheerTalkId);
   }
 }

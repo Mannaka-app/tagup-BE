@@ -1,4 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UsersService } from '../users/users.service';
 import { PaginationQueryDto } from './dto/paginationQuery.dto';
@@ -87,5 +91,28 @@ export class CheerService {
       }
       throw error;
     }
+  }
+
+  async deleteCheerTalk(userId: number, cheerTalkId: number) {
+    const cheerTalk = await this.prisma.cheerTalk.findUnique({
+      where: { id: cheerTalkId },
+    });
+
+    if (!cheerTalk) {
+      throw new NotFoundException('해당 응원을 찾을 수 없습니다.');
+    }
+
+    if (cheerTalk.userId !== userId) {
+      throw new ForbiddenException('권한이 없습니다.');
+    }
+
+    await this.prisma.cheerTalk.delete({
+      where: { id: cheerTalkId },
+    });
+
+    return {
+      success: true,
+      message: '응원이 성공적으로 삭제되었습니다.',
+    };
   }
 }
