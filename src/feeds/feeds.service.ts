@@ -47,11 +47,11 @@ export class FeedsService {
   }
 
   async createFeed(userId: number, createFeedDto: CreateFeedDto) {
-    const { title, content, tagIds, imageUrls } = createFeedDto;
+    const { content, tagIds, imageUrls } = createFeedDto;
 
     await this.prisma.$transaction(async (prisma) => {
       const feed = await prisma.feeds.create({
-        data: { userId, title, content },
+        data: { userId, content },
       });
 
       if (tagIds.length) {
