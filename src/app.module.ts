@@ -11,6 +11,7 @@ import { GameModule } from './modules/games/games.module';
 import { S3Service } from './s3/s3.service';
 import { S3Module } from './s3/s3.module';
 import { CheerModule } from './modules/cheer/cheer.module';
+import { FeedsModule } from './feeds/feeds.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { CheerModule } from './modules/cheer/cheer.module';
     GameModule,
     S3Module,
     CheerModule,
+    FeedsModule,
   ],
   controllers: [AppController],
   providers: [AppService, JwtStrategy, S3Service],
