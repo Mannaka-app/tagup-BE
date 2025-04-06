@@ -12,10 +12,6 @@ import {
 export class CreateFeedDto {
   @IsString()
   @IsNotEmpty()
-  title: string;
-
-  @IsString()
-  @IsNotEmpty()
   content: string;
 
   @IsOptional()
