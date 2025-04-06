@@ -1,5 +1,6 @@
 import {
   ConflictException,
+  HttpException,
   Injectable,
   InternalServerErrorException,
   UnauthorizedException,
@@ -103,6 +104,15 @@ export class AuthService {
       const decodedHeader = jwt.decode(idToken, {
         complete: true,
       }) as jwt.Jwt;
+
+      if (
+        !decodedHeader ||
+        typeof decodedHeader !== 'object' ||
+        !decodedHeader.header?.kid
+      ) {
+        throw new UnauthorizedException('유효하지 않은 idToken 형식입니다.');
+      }
+
       const kid = decodedHeader.header.kid;
 
       const key = await this.jwksClient.getSigningKey(kid);
@@ -116,68 +126,82 @@ export class AuthService {
       const kakaoId = payload.sub;
       return kakaoId;
     } catch (err) {
-      console.error('Kakao ID token verification failed:', err);
-      throw new UnauthorizedException('Invalid Kakao idToken');
+      console.error('카카오 idToken 인증 실패:', err);
+      throw new UnauthorizedException('유효하지 않은 카카오 idToken 입니다.');
     }
   }
 
   // 카카오 로그인 처리
   async kakaoLogin(idToken) {
-    const sub = await this.kakaoIdTokenDecode(idToken);
+    try {
+      const sub = await this.kakaoIdTokenDecode(idToken);
 
-    let user = await this.prisma.users.findUnique({
-      where: { sub },
-      include: { teams: true },
-    });
-
-    if (!user) {
-      user = await this.prisma.users.create({
-        data: {
-          sub,
-          authProvider: 'Kakao',
-          profileUrl: process.env.DEFAULT_PROFILE_URL,
-        },
+      let user = await this.prisma.users.findUnique({
+        where: { sub },
         include: { teams: true },
       });
+
+      if (!user) {
+        user = await this.prisma.users.create({
+          data: {
+            sub,
+            authProvider: 'Kakao',
+            profileUrl: process.env.DEFAULT_PROFILE_URL,
+          },
+          include: { teams: true },
+        });
+      }
+
+      const isNew = user.gender && user.nickname && user.team;
+
+      const jwtTokens = await this.generateTokens(user.id);
+
+      await this.redis.set(
+        `refresh:${user.id}`,
+        jwtTokens.refresh,
+        60 * 60 * 24 * 7,
+      );
+
+      return {
+        success: true,
+        message: '카카오 로그인이 완료됐습니다',
+        user: { ...user, isNew },
+        accessToken: jwtTokens.access,
+        refreshToken: jwtTokens.refresh,
+      };
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+
+      console.error('카카오 로그인 중 서버 오류:', error);
+      throw new InternalServerErrorException('카카오 로그인에 실패했습니다.');
     }
-
-    const isNew = user.gender && user.nickname && user.team;
-
-    const jwtTokens = await this.generateTokens(user.id);
-
-    await this.redis.set(
-      `refresh:${user.id}`,
-      jwtTokens.refresh,
-      60 * 60 * 24 * 7,
-    );
-
-    return {
-      success: true,
-      message: '카카오 로그인이 완료됐습니다',
-      user: { ...user, isNew },
-      accessToken: jwtTokens.access,
-      refreshToken: jwtTokens.refresh,
-    };
   }
 
   // 엑세스/리프레시 토큰 생성
-  async generateTokens(userId) {
-    const access = this.jwt.sign(
-      { userId: userId },
-      {
-        secret: process.env.JWT_ACCESS_SECRET,
-        expiresIn: '1h',
-      },
-    );
+  async generateTokens(userId: number) {
+    try {
+      const access = this.jwt.sign(
+        { userId: userId },
+        {
+          secret: process.env.JWT_ACCESS_SECRET,
+          expiresIn: '1h',
+        },
+      );
 
-    const refresh = this.jwt.sign(
-      { userId: userId },
-      {
-        secret: process.env.JWT_REFRESH_SECRET,
-        expiresIn: '7d',
-      },
-    );
+      const refresh = this.jwt.sign(
+        { userId: userId },
+        {
+          secret: process.env.JWT_REFRESH_SECRET,
+          expiresIn: '7d',
+        },
+      );
 
-    return { access, refresh };
+      return { access, refresh };
+    } catch (error) {
+      console.error('JWT 토큰 생성 중 오류:', error);
+      throw new InternalServerErrorException('토큰 생성에 실패했습니다.');
+    }
   }
 }
