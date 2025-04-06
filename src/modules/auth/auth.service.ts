@@ -92,6 +92,7 @@ export class AuthService {
         throw new UnauthorizedException('비밀번호가 일치하지 않습니다.');
       }
     } catch (err) {
+      console.error(err);
       if (err instanceof UnauthorizedException) throw err;
       throw new InternalServerErrorException('서버에서 오류가 발생했습니다.');
     }
