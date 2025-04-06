@@ -103,9 +103,10 @@ model Feeds {
   content   String
   createdAt DateTime @default(now())
 
-  likes    FeedLike[]
-  users    Users      @relation(fields: [userId], references: [id])
-  FeedTags FeedTags[]
+  likes      FeedLike[]
+  users      Users        @relation(fields: [userId], references: [id])
+  FeedTags   FeedTags[]
+  FeedImages FeedImages[]
 }
 
 model Tags {
@@ -163,4 +164,11 @@ model FeedLike {
   feeds Feeds @relation(fields: [feedId], references: [id])
 
   @@id([userId, feedId])
+}
+
+model FeedImages {
+  id     Int    @id @default(autoincrement())
+  url    String
+  feedId Int
+  feeds  Feeds  @relation(fields: [feedId], references: [id])
 }
