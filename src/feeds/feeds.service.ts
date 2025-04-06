@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { S3Service } from 'src/s3/s3.service';
+import { CreateFeedDto } from './dto/createFeed.dto';
 
 @Injectable()
 export class FeedsService {
@@ -43,5 +44,33 @@ export class FeedsService {
       console.error('이미지 업로드 중 오류 발생', error);
       throw new InternalServerErrorException('이미지 업로드에 실패했습니다.');
     }
+  }
+
+  async createFeed(userId: number, createFeedDto: CreateFeedDto) {
+    const { title, content, tagIds, imageUrls } = createFeedDto;
+
+    await this.prisma.$transaction(async (prisma) => {
+      const feed = await prisma.feeds.create({
+        data: { userId, title, content },
+      });
+
+      if (tagIds.length) {
+        await prisma.feedTags.createMany({
+          data: tagIds.map((tagId) => ({
+            feedId: feed.id,
+            tagId,
+          })),
+        });
+      }
+
+      await prisma.feedImages.createMany({
+        data: imageUrls.map((url) => ({
+          feedId: feed.id,
+          url,
+        })),
+      });
+    });
+
+    return { success: true, message: '피드 등록이 완료됐습니다.' };
   }
 }
