@@ -99,7 +99,6 @@ enum GameStatus {
 model Feeds {
   id        Int      @id @default(autoincrement())
   userId    Int
-  title     String
   content   String
   createdAt DateTime @default(now())
 
