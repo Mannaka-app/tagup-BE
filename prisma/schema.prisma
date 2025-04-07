@@ -102,10 +102,11 @@ model Feeds {
   content   String
   createdAt DateTime @default(now())
 
-  likes      FeedLike[]
-  users      Users        @relation(fields: [userId], references: [id])
-  FeedTags   FeedTags[]
-  FeedImages FeedImages[]
+  likes        FeedLike[]
+  users        Users          @relation(fields: [userId], references: [id])
+  FeedTags     FeedTags[]
+  FeedImages   FeedImages[]
+  FeedComments FeedComments[]
 }
 
 model Tags {
@@ -130,6 +131,7 @@ model FeedComments {
   content   String
   createdAt DateTime @default(now())
 
+  feeds Feeds @relation(fields: [feedId], references: [id])
   users Users @relation(fields: [userId], references: [id])
 }
 
