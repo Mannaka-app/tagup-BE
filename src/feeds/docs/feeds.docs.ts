@@ -2,6 +2,7 @@ import {
   ApiBody,
   ApiConsumes,
   ApiOperation,
+  ApiParam,
   ApiResponse,
 } from '@nestjs/swagger';
 
@@ -140,6 +141,41 @@ export const getFeedsDocs = {
             isLiked: '내가 좋아요 눌렀는지 여부',
           },
         ],
+      },
+    },
+  }),
+};
+
+export const createFeedCommentDocs = {
+  ApiOperation: ApiOperation({
+    summary: '댓글 작성',
+    description: '피드에 댓글을 작성합니다.',
+  }),
+  ApiParam: ApiParam({
+    name: 'feedId',
+    required: true,
+    description: '댓글을 작성할 피드의 ID',
+    type: Number,
+  }),
+  ApiBody: ApiBody({
+    description: '댓글 내용',
+    schema: {
+      type: 'object',
+      properties: {
+        content: {
+          type: 'string',
+          example: '직관 재밌었어요!',
+        },
+      },
+    },
+  }),
+  ApiResponse: ApiResponse({
+    status: 201,
+    description: '댓글 작성 성공',
+    schema: {
+      example: {
+        success: true,
+        message: '댓글이 등록되었습니다.',
       },
     },
   }),

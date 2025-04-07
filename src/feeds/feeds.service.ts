@@ -104,4 +104,12 @@ export class FeedsService {
 
     return { feed };
   }
+
+  async createFeedComment(userId: number, feedId: number, content: string) {
+    await this.prisma.feedComments.create({
+      data: { userId, feedId, content },
+    });
+
+    return { success: true, message: '댓글이 등록되었습니다.' };
+  }
 }

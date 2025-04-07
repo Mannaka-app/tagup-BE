@@ -2,6 +2,8 @@ import {
   Body,
   Controller,
   Get,
+  Param,
+  ParseIntPipe,
   Post,
   UploadedFile,
   UseGuards,
@@ -13,6 +15,7 @@ import { CreateFeedDto } from './dto/createFeed.dto';
 import { JwtAuthGuard } from 'src/modules/auth/guards/jwt-auth.guard';
 import { CurrentUserId } from 'src/common/decorators/current-user-id.decorator';
 import {
+  createFeedCommentDocs,
   createFeedDocs,
   getAllTagsDocs,
   getFeedsDocs,
@@ -62,5 +65,24 @@ export class FeedsController {
   @getFeedsDocs.ApiResponse
   async getFeeds(@CurrentUserId() userId: number) {
     return await this.feedsService.getFeeds(userId);
+  }
+
+  @Post(':feedId/comments')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @createFeedCommentDocs.ApiOperation
+  @createFeedCommentDocs.ApiParam
+  @createFeedCommentDocs.ApiBody
+  @createFeedCommentDocs.ApiResponse
+  async createFeedComment(
+    @CurrentUserId() userId: number,
+    @Param('feedId', ParseIntPipe) feedId: number,
+    @Body() data: { content: string },
+  ) {
+    return await this.feedsService.createFeedComment(
+      userId,
+      feedId,
+      data.content,
+    );
   }
 }
