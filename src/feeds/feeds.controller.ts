@@ -12,17 +12,31 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { CreateFeedDto } from './dto/createFeed.dto';
 import { JwtAuthGuard } from 'src/modules/auth/guards/jwt-auth.guard';
 import { CurrentUserId } from 'src/common/decorators/current-user-id.decorator';
+import {
+  createFeedDocs,
+  getAllTagsDocs,
+  getFeedsDocs,
+  uploadFeedImageDocs,
+} from './docs/feeds.docs';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
 @Controller('feeds')
 export class FeedsController {
   constructor(private readonly feedsService: FeedsService) {}
 
   @Get('tags')
+  @getAllTagsDocs.ApiOperation
+  @getAllTagsDocs.ApiResponse
   async getAllTags() {
     return await this.feedsService.getAllTags();
   }
 
   @Post('image')
+  @UseInterceptors(FileInterceptor('file'))
+  @uploadFeedImageDocs.ApiOperation
+  @uploadFeedImageDocs.ApiConsumes
+  @uploadFeedImageDocs.ApiBody
+  @uploadFeedImageDocs.ApiResponse
   @UseInterceptors(FileInterceptor('file'))
   async uploadImage(@UploadedFile() file: Express.Multer.File) {
     return await this.feedsService.uploadFeedImage(file);
@@ -30,6 +44,10 @@ export class FeedsController {
 
   @Post()
   @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @createFeedDocs.ApiOperation
+  @createFeedDocs.ApiBody
+  @createFeedDocs.ApiResponse
   async createFeed(
     @CurrentUserId() userId: number,
     @Body() createFeedDto: CreateFeedDto,
@@ -39,6 +57,9 @@ export class FeedsController {
 
   @Get()
   @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @getFeedsDocs.ApiOperation
+  @getFeedsDocs.ApiResponse
   async getFeeds(@CurrentUserId() userId: number) {
     return await this.feedsService.getFeeds(userId);
   }
