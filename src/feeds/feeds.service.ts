@@ -73,4 +73,35 @@ export class FeedsService {
 
     return { success: true, message: '피드 등록이 완료됐습니다.' };
   }
+
+  async getFeeds(userId: number) {
+    const result = await this.prisma.feeds.findMany({
+      orderBy: { id: 'desc' },
+      include: {
+        users: true,
+        FeedImages: true,
+        FeedTags: true,
+        likes: true,
+        FeedComments: true,
+      },
+    });
+
+    const feed = result.map((res) => ({
+      id: res.id,
+      userId: res.userId,
+      userTeamId: res.users.team,
+      nickName: res.users.nickname,
+      profileUrl: res.users.profileUrl,
+      userLevel: res.users.level,
+      content: res.content,
+      createdAt: res.createdAt,
+      images: res.FeedImages.map((img) => img.url),
+      tagIds: res.FeedTags.map((tag) => tag.tagId),
+      comments: res.FeedComments.length,
+      likes: res.likes.length,
+      isLiked: res.likes.filter((like) => like.userId == userId).length,
+    }));
+
+    return { feed };
+  }
 }

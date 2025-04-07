@@ -36,4 +36,10 @@ export class FeedsController {
   ) {
     return await this.feedsService.createFeed(userId, createFeedDto);
   }
+
+  @Get()
+  @UseGuards(JwtAuthGuard)
+  async getFeeds(@CurrentUserId() userId: number) {
+    return await this.feedsService.getFeeds(userId);
+  }
 }
