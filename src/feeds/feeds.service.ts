@@ -66,20 +66,11 @@ export class FeedsService {
       },
     });
 
-    const feed = result.map((res) => ({
-      id: res.id,
-      userId: res.userId,
-      userTeamId: res.users.team,
-      nickName: res.users.nickname,
-      profileUrl: res.users.profileUrl,
-      userLevel: res.users.level,
-      content: res.content,
-      createdAt: res.createdAt,
-      images: res.FeedImages.map((img) => img.url),
-      comments: res.FeedComments.length,
-      likes: res.likes.length,
-      isLiked: res.likes.filter((like) => like.userId == userId).length,
-    }));
+    const feed = [];
+    for (const res of result) {
+      const data = await this.formatFeed(res, userId);
+      feed.push(data);
+    }
 
     return { feed };
   }
@@ -90,5 +81,22 @@ export class FeedsService {
     });
 
     return { success: true, message: '댓글이 등록되었습니다.' };
+  }
+
+  async formatFeed(result, userId: number) {
+    return {
+      id: result.id,
+      userId: result.userId,
+      userTeamId: result.users.team,
+      nickName: result.users.nickname,
+      profileUrl: result.users.profileUrl,
+      userLevel: result.users.level,
+      content: result.content,
+      createdAt: result.createdAt,
+      images: result.FeedImages.map((img) => img.url),
+      comments: result.FeedComments.length,
+      likes: result.likes.length,
+      isLiked: result.likes.filter((like) => like.userId == userId).length,
+    };
   }
 }
