@@ -121,7 +121,7 @@ model FeedTags {
   tagId  Int
 
   tags  Tags  @relation(fields: [tagId], references: [id])
-  feeds Feeds @relation(fields: [feedId], references: [id])
+  feeds Feeds @relation(fields: [feedId], references: [id], onDelete: Cascade)
 }
 
 model FeedComments {
@@ -131,7 +131,7 @@ model FeedComments {
   content   String
   createdAt DateTime @default(now())
 
-  feeds Feeds @relation(fields: [feedId], references: [id])
+  feeds Feeds @relation(fields: [feedId], references: [id], onDelete: Cascade)
   users Users @relation(fields: [userId], references: [id])
 }
 
@@ -162,7 +162,7 @@ model FeedLike {
   feedId Int
 
   users Users @relation(fields: [userId], references: [id])
-  feeds Feeds @relation(fields: [feedId], references: [id])
+  feeds Feeds @relation(fields: [feedId], references: [id], onDelete: Cascade)
 
   @@id([userId, feedId])
 }
@@ -171,5 +171,5 @@ model FeedImages {
   id     Int    @id @default(autoincrement())
   url    String
   feedId Int
-  feeds  Feeds  @relation(fields: [feedId], references: [id])
+  feeds  Feeds  @relation(fields: [feedId], references: [id], onDelete: Cascade)
 }
