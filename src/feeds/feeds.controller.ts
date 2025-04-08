@@ -17,6 +17,7 @@ import { CurrentUserId } from 'src/common/decorators/current-user-id.decorator';
 import {
   createFeedCommentDocs,
   createFeedDocs,
+  getFeedByIdDocs,
   getFeedsDocs,
   uploadFeedImageDocs,
 } from './docs/feeds.docs';
@@ -76,5 +77,18 @@ export class FeedsController {
       feedId,
       data.content,
     );
+  }
+
+  @Get(':feedId')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @getFeedByIdDocs.ApiOperation
+  @getFeedByIdDocs.ApiParam
+  @getFeedByIdDocs.ApiResponse
+  async getFeedById(
+    @CurrentUserId() userId: number,
+    @Param('feedId') feedId: number,
+  ) {
+    return await this.feedsService.getFeedById(feedId, userId);
   }
 }

@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Injectable,
   InternalServerErrorException,
+  NotFoundException,
 } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { S3Service } from 'src/s3/s3.service';
@@ -81,6 +82,36 @@ export class FeedsService {
     });
 
     return { success: true, message: '댓글이 등록되었습니다.' };
+  }
+
+  async getFeedById(feedId: number, userId: number) {
+    const result = await this.prisma.feeds.findUnique({
+      where: { id: feedId },
+      include: {
+        users: true,
+        FeedImages: true,
+        FeedTags: true,
+        likes: true,
+        FeedComments: { include: { users: true } },
+      },
+    });
+
+    if (!result) {
+      throw new NotFoundException('피드를 찾을 수 없습니다.');
+    }
+
+    const feed = await this.formatFeed(result, userId);
+    const comment = result.FeedComments.map((res) => ({
+      id: res.id,
+      userId: res.userId,
+      nickName: res.users.nickname,
+      profileUrl: res.users.profileUrl,
+      userLevel: res.users.level,
+      content: res.content,
+      createdAt: res.createdAt,
+    }));
+
+    return { feed, comment };
   }
 
   async formatFeed(result, userId: number) {
