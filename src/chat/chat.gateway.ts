@@ -8,7 +8,7 @@ export class ChatGateway {
 
   @WebSocketServer() server: Server;
 
-  hadleConnection(client: Socket) {
+  handleConnection(client: Socket) {
     console.log('유저 연결됨 :', client.id);
   }
 
