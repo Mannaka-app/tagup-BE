@@ -199,3 +199,28 @@ export const getFeedByIdDocs = {
     },
   }),
 };
+
+export const deleteFeedDocs = {
+  ApiOperation: ApiOperation({
+    summary: '피드 삭제',
+    description: '해당 피드를 삭제합니다. 작성자 본인만 삭제할 수 있습니다.',
+  }),
+
+  ApiParam: ApiParam({
+    name: 'feedId',
+    type: Number,
+    description: '삭제할 피드의 ID',
+    example: 1,
+  }),
+
+  ApiResponse: ApiResponse({
+    status: 200,
+    description: '피드 삭제 성공',
+    schema: {
+      example: {
+        success: true,
+        message: '피드가 삭제되었습니다.',
+      },
+    },
+  }),
+};

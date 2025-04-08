@@ -18,6 +18,7 @@ import { CurrentUserId } from 'src/common/decorators/current-user-id.decorator';
 import {
   createFeedCommentDocs,
   createFeedDocs,
+  deleteFeedDocs,
   getFeedByIdDocs,
   getFeedsDocs,
   uploadFeedImageDocs,
@@ -94,6 +95,10 @@ export class FeedsController {
 
   @Delete(':feedId')
   @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @deleteFeedDocs.ApiOperation
+  @deleteFeedDocs.ApiParam
+  @deleteFeedDocs.ApiResponse
   async deleteFeed(
     @CurrentUserId() userId: number,
     @Param('feedId', ParseIntPipe) feedId: number,
