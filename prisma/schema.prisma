@@ -39,6 +39,8 @@ model Users {
 
   CheerTalk      CheerTalk[]
   CheerTalkLikes CheerTalkLikes[]
+  RoomUsers      RoomUsers[]
+  Messages       Messages[]
 }
 
 enum Gender {
@@ -172,4 +174,32 @@ model FeedImages {
   url    String
   feedId Int
   feeds  Feeds  @relation(fields: [feedId], references: [id], onDelete: Cascade)
+}
+
+model Rooms {
+  id        Int         @id @default(autoincrement())
+  title     String
+  createdAt DateTime    @default(now())
+  RoomUsers RoomUsers[]
+  Messages  Messages[]
+}
+
+model RoomUsers {
+  id     Int @id @default(autoincrement())
+  roomId Int
+  userId Int
+
+  rooms Rooms @relation(fields: [roomId], references: [id])
+  users Users @relation(fields: [userId], references: [id])
+}
+
+model Messages {
+  id        Int      @id @default(autoincrement())
+  roomId    Int
+  userId    Int
+  content   String
+  createdAt DateTime @default(now())
+
+  rooms Rooms @relation(fields: [roomId], references: [id])
+  users Users @relation(fields: [userId], references: [id])
 }
