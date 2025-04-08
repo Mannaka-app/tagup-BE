@@ -33,7 +33,6 @@ export class FeedsController {
   @uploadFeedImageDocs.ApiConsumes
   @uploadFeedImageDocs.ApiBody
   @uploadFeedImageDocs.ApiResponse
-  @UseInterceptors(FileInterceptor('file'))
   async uploadImage(@UploadedFile() file: Express.Multer.File) {
     return await this.feedsService.uploadFeedImage(file);
   }
