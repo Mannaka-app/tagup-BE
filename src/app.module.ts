@@ -12,6 +12,7 @@ import { S3Service } from './s3/s3.service';
 import { S3Module } from './s3/s3.module';
 import { CheerModule } from './modules/cheer/cheer.module';
 import { FeedsModule } from './feeds/feeds.module';
+import { ChatModule } from './chat/chat.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { FeedsModule } from './feeds/feeds.module';
     S3Module,
     CheerModule,
     FeedsModule,
+    ChatModule,
   ],
   controllers: [AppController],
   providers: [AppService, JwtStrategy, S3Service],
