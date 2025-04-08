@@ -85,14 +85,10 @@ export class FeedsService {
     return { success: true, message: '댓글이 등록되었습니다.' };
   }
 
-  async getFeedById(feedId: number, userId: number) {
+  async getFeedComments(feedId: number) {
     const result = await this.prisma.feeds.findUnique({
       where: { id: feedId },
-      include: {
-        users: true,
-        FeedImages: true,
-        FeedTags: true,
-        likes: true,
+      select: {
         FeedComments: { include: { users: true } },
       },
     });
@@ -101,7 +97,6 @@ export class FeedsService {
       throw new NotFoundException('피드를 찾을 수 없습니다.');
     }
 
-    const feed = await this.formatFeed(result, userId);
     const comment = result.FeedComments.map((res) => ({
       id: res.id,
       userId: res.userId,
@@ -112,7 +107,7 @@ export class FeedsService {
       createdAt: res.createdAt,
     }));
 
-    return { feed, comment };
+    return { comment };
   }
 
   async formatFeed(result, userId: number) {

@@ -19,7 +19,7 @@ import {
   createFeedCommentDocs,
   createFeedDocs,
   deleteFeedDocs,
-  getFeedByIdDocs,
+  getFeedCommentsDocs,
   getFeedsDocs,
   uploadFeedImageDocs,
 } from './docs/feeds.docs';
@@ -83,14 +83,11 @@ export class FeedsController {
   @Get(':feedId')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @getFeedByIdDocs.ApiOperation
-  @getFeedByIdDocs.ApiParam
-  @getFeedByIdDocs.ApiResponse
-  async getFeedById(
-    @CurrentUserId() userId: number,
-    @Param('feedId') feedId: number,
-  ) {
-    return await this.feedsService.getFeedById(feedId, userId);
+  @getFeedCommentsDocs.ApiOperation
+  @getFeedCommentsDocs.ApiParam
+  @getFeedCommentsDocs.ApiResponse
+  async getFeedComments(@Param('feedId') feedId: number) {
+    return await this.feedsService.getFeedComments(feedId);
   }
 
   @Delete(':feedId')

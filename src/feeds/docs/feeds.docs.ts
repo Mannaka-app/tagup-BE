@@ -151,11 +151,10 @@ export const createFeedCommentDocs = {
   }),
 };
 
-export const getFeedByIdDocs = {
+export const getFeedCommentsDocs = {
   ApiOperation: ApiOperation({
-    summary: '피드 개별 조회',
-    description:
-      '피드 ID를 통해 해당 피드의 상세정보와 댓글 목록을 조회합니다.',
+    summary: '피드 댓글 조회',
+    description: '피드 ID를 통해 해당 피드의 댓글 목록을 조회합니다.',
   }),
 
   ApiParam: ApiParam({
@@ -170,20 +169,6 @@ export const getFeedByIdDocs = {
     description: '피드 개별 조회 성공',
     schema: {
       example: {
-        feed: {
-          id: '피드 ID',
-          userId: '피드 작성자 유저 ID',
-          userTeamId: '피드 작성자의 응원 팀 ID',
-          nickName: '피드 작성자 닉네임',
-          profileUrl: '피드 작성자 프로필 이미지 URL',
-          userLevel: '피드 작성자 레벨',
-          content: '피드 내용',
-          createdAt: '피드 작성 일시',
-          images: ['피드 이미지 URL 목록'],
-          comments: '댓글 수',
-          likes: '좋아요 수',
-          isLiked: '로그인한 유저가 좋아요 눌렀는지 여부 (0 | 1)',
-        },
         comment: [
           {
             id: '댓글 ID',
