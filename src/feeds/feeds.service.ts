@@ -14,17 +14,6 @@ export class FeedsService {
     private readonly s3: S3Service,
   ) {}
 
-  async getAllTags() {
-    try {
-      const tags = await this.prisma.tags.findMany();
-
-      return { success: true, tags };
-    } catch (error) {
-      console.error('태그 목록 불러오는 중 에러 발생:', error);
-      throw new InternalServerErrorException('서버에서 오류가 발생했습니다.');
-    }
-  }
-
   async uploadFeedImage(file: Express.Multer.File) {
     try {
       const fileType = file.mimetype.split('/')[1];
@@ -47,21 +36,12 @@ export class FeedsService {
   }
 
   async createFeed(userId: number, createFeedDto: CreateFeedDto) {
-    const { content, tagIds, imageUrls } = createFeedDto;
+    const { content, imageUrls } = createFeedDto;
 
     await this.prisma.$transaction(async (prisma) => {
       const feed = await prisma.feeds.create({
         data: { userId, content },
       });
-
-      if (tagIds.length) {
-        await prisma.feedTags.createMany({
-          data: tagIds.map((tagId) => ({
-            feedId: feed.id,
-            tagId,
-          })),
-        });
-      }
 
       await prisma.feedImages.createMany({
         data: imageUrls.map((url) => ({
@@ -96,7 +76,6 @@ export class FeedsService {
       content: res.content,
       createdAt: res.createdAt,
       images: res.FeedImages.map((img) => img.url),
-      tagIds: res.FeedTags.map((tag) => tag.tagId),
       comments: res.FeedComments.length,
       likes: res.likes.length,
       isLiked: res.likes.filter((like) => like.userId == userId).length,

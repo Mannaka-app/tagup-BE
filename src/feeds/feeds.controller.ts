@@ -17,7 +17,6 @@ import { CurrentUserId } from 'src/common/decorators/current-user-id.decorator';
 import {
   createFeedCommentDocs,
   createFeedDocs,
-  getAllTagsDocs,
   getFeedsDocs,
   uploadFeedImageDocs,
 } from './docs/feeds.docs';
@@ -26,13 +25,6 @@ import { ApiBearerAuth } from '@nestjs/swagger';
 @Controller('feeds')
 export class FeedsController {
   constructor(private readonly feedsService: FeedsService) {}
-
-  @Get('tags')
-  @getAllTagsDocs.ApiOperation
-  @getAllTagsDocs.ApiResponse
-  async getAllTags() {
-    return await this.feedsService.getAllTags();
-  }
 
   @Post('image')
   @UseInterceptors(FileInterceptor('file'))

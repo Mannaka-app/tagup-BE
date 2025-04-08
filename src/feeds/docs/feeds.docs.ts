@@ -6,27 +6,6 @@ import {
   ApiResponse,
 } from '@nestjs/swagger';
 
-export const getAllTagsDocs = {
-  ApiOperation: ApiOperation({
-    summary: '태그 전체 조회',
-    description: '피드 작성 시 사용할 수 있는 모든 태그를 조회합니다.',
-  }),
-
-  ApiResponse: ApiResponse({
-    status: 200,
-    description: '태그 목록 조회 성공',
-    schema: {
-      example: {
-        success: true,
-        tags: [
-          { id: '태그 아이디', name: '태그 이름' },
-          { id: '태그 아이디', name: '태그 이름' },
-        ],
-      },
-    },
-  }),
-};
-
 export const uploadFeedImageDocs = {
   ApiOperation: ApiOperation({
     summary: '피드 이미지 업로드',
@@ -79,14 +58,6 @@ export const createFeedDocs = {
           example: '직관 인증합니다!',
           description: '피드 내용',
         },
-        tagIds: {
-          type: 'array',
-          items: {
-            type: 'number',
-          },
-          example: [1, 2],
-          description: '선택한 태그 ID 배열 (선택)',
-        },
         imageUrls: {
           type: 'array',
           items: {
@@ -135,7 +106,6 @@ export const getFeedsDocs = {
             content: '피드 내용',
             createdAt: '피드 작성 시간',
             images: ['피드 이미지1', '피드 이미지2'],
-            tagIds: ['태그 아이디1', '태그 아이디2'],
             comments: '댓글 수',
             likes: '좋아요 수',
             isLiked: '내가 좋아요 눌렀는지 여부',
