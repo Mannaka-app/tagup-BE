@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ForbiddenException,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
@@ -129,5 +130,25 @@ export class FeedsService {
       likes: result.likes.length,
       isLiked: result.likes.filter((like) => like.userId == userId).length,
     };
+  }
+
+  async deleteFeed(feedId: number, userId: number) {
+    const feed = await this.prisma.feeds.findUnique({
+      where: { id: feedId },
+    });
+
+    if (!feed) {
+      throw new NotFoundException('피드를 찾을 수 없습니다.');
+    }
+
+    if (feed.userId !== userId) {
+      throw new ForbiddenException('권한이 없습니다.');
+    }
+
+    await this.prisma.feeds.delete({
+      where: { id: feedId },
+    });
+
+    return { success: true, message: '피드가 삭제되었습니다.' };
   }
 }

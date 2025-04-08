@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   ParseIntPipe,
@@ -89,5 +90,14 @@ export class FeedsController {
     @Param('feedId') feedId: number,
   ) {
     return await this.feedsService.getFeedById(feedId, userId);
+  }
+
+  @Delete(':feedId')
+  @UseGuards(JwtAuthGuard)
+  async deleteFeed(
+    @CurrentUserId() userId: number,
+    @Param('feedId', ParseIntPipe) feedId: number,
+  ) {
+    return await this.feedsService.deleteFeed(feedId, userId);
   }
 }
