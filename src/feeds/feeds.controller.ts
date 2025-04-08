@@ -80,7 +80,7 @@ export class FeedsController {
     );
   }
 
-  @Get(':feedId')
+  @Get(':feedId/comments')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @getFeedCommentsDocs.ApiOperation
