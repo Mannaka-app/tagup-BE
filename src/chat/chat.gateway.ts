@@ -17,6 +17,7 @@ export class ChatGateway {
   @WebSocketServer() server: Server;
 
   handleConnection(client: Socket) {
+    console.log(client.handshake.query);
     const userId = Number(client.handshake.query.userId);
     console.log(`유저 연결됨 소켓: ${client.id} / 유저 아이디 : ${userId}`);
   }
