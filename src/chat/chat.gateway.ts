@@ -67,4 +67,42 @@ export class ChatGateway {
 
     client.emit('roomJoined', room);
   }
+
+  @SubscribeMessage('message')
+  async handleMessage(
+    client: Socket,
+    payload: { roomId: number; content: string },
+  ) {
+    const userId = Number(client.handshake.query.userId);
+
+    const message = await this.prisma.messages.create({
+      data: {
+        roomId: payload.roomId,
+        userId,
+        content: payload.content,
+      },
+      include: {
+        users: {
+          select: {
+            nickname: true,
+            profileUrl: true,
+            level: true,
+          },
+        },
+      },
+    });
+
+    const response = {
+      id: message.id,
+      userId: message.userId,
+      nickname: message.users.nickname,
+      profileUrl: message.users.profileUrl,
+      userLevel: message.users.level,
+      content: message.content,
+      createdAt: message.createdAt,
+    };
+
+    // 같은 방에 있는 유저에게 메시지 브로드캐스트
+    this.server.to(payload.roomId.toString()).emit('message', response);
+  }
 }
