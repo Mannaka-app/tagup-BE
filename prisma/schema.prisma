@@ -185,9 +185,10 @@ model Rooms {
 }
 
 model RoomUsers {
-  id     Int @id @default(autoincrement())
-  roomId Int
-  userId Int
+  id       Int      @id @default(autoincrement())
+  roomId   Int
+  userId   Int
+  joinedAt DateTime @default(now())
 
   rooms Rooms @relation(fields: [roomId], references: [id])
   users Users @relation(fields: [userId], references: [id])
