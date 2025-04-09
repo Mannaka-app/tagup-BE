@@ -27,7 +27,7 @@ export class ChatGateway {
 
   // 채팅방 생성
   @SubscribeMessage('createRoom')
-  async handleJoinRoom(client: Socket, payload: { title: string }) {
+  async handleCreateRoom(client: Socket, payload: { title: string }) {
     const userId = Number(client.handshake.query.userId);
     let room;
     await this.prisma.$transaction(async (prisma) => {
@@ -42,7 +42,29 @@ export class ChatGateway {
       });
     });
 
-    client.join(room.id);
-    client.emit('roomCreated', room);
+    client.join(room.id.toString());
+    this.server.emit('roomCreated', room);
+  }
+
+  // 채팅방 참여
+  @SubscribeMessage('joinRoom')
+  async handleJoinRoom(client: Socket, payload: { roomId: number }) {
+    const userId = Number(client.handshake.query.userId);
+
+    await this.prisma.roomUsers.create({
+      data: { userId, roomId: payload.roomId },
+    });
+
+    console.log('새로운 유저 참여 db 저장');
+
+    const room = await this.prisma.rooms.findUnique({
+      where: { id: payload.roomId },
+    });
+
+    client.join(room.id.toString());
+
+    console.log('새로운 유저 채팅방 참여');
+
+    client.emit('roomJoined', room);
   }
 }
