@@ -6,6 +6,15 @@ export class ChatService {
   constructor(private readonly prisma: PrismaService) {}
 
   async getRooms() {
-    return await this.prisma.rooms.findMany();
+    const result = await this.prisma.rooms.findMany({
+      include: { RoomUsers: true },
+    });
+
+    return result.map((res) => ({
+      id: res.id,
+      title: res.title,
+      createAt: res.createdAt,
+      members: res.RoomUsers.length,
+    }));
   }
 }
