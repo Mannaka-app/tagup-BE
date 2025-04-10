@@ -6,7 +6,7 @@ export class ChatController {
   constructor(private readonly chatService: ChatService) {}
 
   @Get()
-  async getRooms() {
-    return await this.chatService.getRooms();
+  async getAllRooms() {
+    return await this.chatService.getAllRooms();
   }
 }
