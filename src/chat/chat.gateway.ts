@@ -96,7 +96,6 @@ export class ChatGateway {
           select: {
             nickname: true,
             profileUrl: true,
-            level: true,
           },
         },
       },
@@ -107,7 +106,6 @@ export class ChatGateway {
       userId: message.userId,
       nickname: message.users.nickname,
       profileUrl: message.users.profileUrl,
-      userLevel: message.users.level,
       content: message.content,
       createdAt: message.createdAt,
     };
