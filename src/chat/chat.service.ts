@@ -50,4 +50,24 @@ export class ChatService {
 
     return { messages };
   }
+
+  async getMyRooms(userId: number) {
+    const result = await this.prisma.rooms.findMany({
+      where: { RoomUsers: { some: { userId } } },
+      include: { RoomUsers: true },
+    });
+
+    const rooms = result.map((res) => ({
+      id: res.id,
+      title: res.title,
+      createAt: res.createdAt,
+      members: res.RoomUsers.length,
+    }));
+
+    return {
+      success: true,
+      message: '참여중인 채팅방 조회에 성공했습니다.',
+      rooms,
+    };
+  }
 }
