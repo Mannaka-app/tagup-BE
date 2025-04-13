@@ -33,13 +33,6 @@ export class ChatController {
     return await this.chatService.getMyRooms(userId);
   }
 
-  @Get('test')
-  async fun1() {
-    const userId = 21;
-    const roomId = 62;
-    return await this.chatService.getRecentMessages(userId, roomId);
-  }
-
   @Get(':roomId/messages')
   async GetMessagesDto(
     @Param('roomId', ParseIntPipe) roomId: number,
