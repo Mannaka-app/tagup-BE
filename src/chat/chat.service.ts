@@ -45,7 +45,6 @@ export class ChatService {
           select: {
             nickname: true,
             profileUrl: true,
-            level: true,
           },
         },
       },
@@ -56,7 +55,6 @@ export class ChatService {
       userId: res.userId,
       nickname: res.users.nickname,
       profileUrl: res.users.profileUrl,
-      userLevel: res.users.level,
       content: res.content,
       createdAt: res.createdAt,
     }));
