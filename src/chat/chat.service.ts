@@ -7,7 +7,13 @@ export class ChatService {
 
   async getAllRooms() {
     const result = await this.prisma.rooms.findMany({
-      include: { RoomUsers: true },
+      include: {
+        RoomUsers: true,
+        Messages: {
+          orderBy: { createdAt: 'desc' },
+          take: 1,
+        },
+      },
     });
 
     const rooms = result.map((res) => ({
@@ -15,6 +21,7 @@ export class ChatService {
       title: res.title,
       createAt: res.createdAt,
       members: res.RoomUsers.length,
+      lastMessage: res.Messages[0] ? res.Messages[0].createdAt : null,
     }));
 
     return {
@@ -60,7 +67,13 @@ export class ChatService {
   async getMyRooms(userId: number) {
     const result = await this.prisma.rooms.findMany({
       where: { RoomUsers: { some: { userId } } },
-      include: { RoomUsers: true },
+      include: {
+        RoomUsers: true,
+        Messages: {
+          orderBy: { createdAt: 'desc' },
+          take: 1,
+        },
+      },
     });
 
     const rooms = result.map((res) => ({
@@ -68,6 +81,7 @@ export class ChatService {
       title: res.title,
       createAt: res.createdAt,
       members: res.RoomUsers.length,
+      lastMessage: res.Messages[0] ? res.Messages[0].createdAt : null,
     }));
 
     return {
