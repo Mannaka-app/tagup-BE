@@ -9,7 +9,11 @@ import {
 import { ChatService } from './chat.service';
 import { JwtAuthGuard } from 'src/modules/auth/guards/jwt-auth.guard';
 import { CurrentUserId } from 'src/common/decorators/current-user-id.decorator';
-import { getAllRoomsDocs, getMyRoomsDocs } from './docs/chat.docs';
+import {
+  getAllRoomsDocs,
+  getMessagesDocs,
+  getMyRoomsDocs,
+} from './docs/chat.docs';
 import { ApiBearerAuth } from '@nestjs/swagger';
 import { GetMessagesDto } from './dto/getMessages.dto';
 
@@ -34,6 +38,11 @@ export class ChatController {
   }
 
   @Get(':roomId/messages')
+  @getMessagesDocs.ApiOperation
+  @getMessagesDocs.ApiParam
+  @getMessagesDocs.ApiQuery1
+  @getMessagesDocs.ApiQuery2
+  @getMessagesDocs.ApiResponse
   async GetMessagesDto(
     @Param('roomId', ParseIntPipe) roomId: number,
     @Query() getMessagesDto: GetMessagesDto,
