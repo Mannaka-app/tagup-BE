@@ -31,7 +31,7 @@ export class ChatService {
     };
   }
 
-  async getMessages(userId: number, roomId: number) {
+  async getRecentMessages(userId: number, roomId: number) {
     const userData = await this.prisma.roomUsers.findMany({
       where: { userId, roomId },
     });
@@ -40,6 +40,8 @@ export class ChatService {
 
     const result = await this.prisma.messages.findMany({
       where: { roomId, createdAt: { gt: joinedAt } },
+      orderBy: { id: 'desc' },
+      take: 15,
       include: {
         users: {
           select: {

@@ -64,7 +64,7 @@ export class ChatGateway {
 
     if (isJoined) {
       client.join(room.id.toString());
-      messages = await this.chatService.getMessages(userId, roomId);
+      messages = await this.chatService.getRecentMessages(userId, roomId);
     } else {
       await this.prisma.roomUsers.create({
         data: { userId, roomId: payload.roomId },
@@ -74,7 +74,6 @@ export class ChatGateway {
     }
 
     console.log(`${userId}유저 ${room.id} 채팅방 참여`);
-
     client.emit('roomJoined', { room, messages });
   }
 
