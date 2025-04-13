@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { GetMessagesDto } from './dto/getMessages.dto';
 
 @Injectable()
 export class ChatService {
@@ -52,7 +53,7 @@ export class ChatService {
       },
     });
 
-    const messages = result.map((res) => ({
+    const messages = result.reverse().map((res) => ({
       id: res.id,
       userId: res.userId,
       nickname: res.users.nickname,
@@ -88,6 +89,44 @@ export class ChatService {
       success: true,
       message: '참여중인 채팅방 조회에 성공했습니다.',
       rooms,
+    };
+  }
+
+  async getMessages(roomId: number, getMessagesDto: GetMessagesDto) {
+    const { cursor, direction } = getMessagesDto;
+    const limit = 15;
+
+    const result = await this.prisma.messages.findMany({
+      where: {
+        roomId,
+        id: direction === 'down' ? { gt: cursor } : { lt: cursor },
+      },
+      orderBy: { id: 'desc' },
+      take: limit,
+      include: {
+        users: {
+          select: {
+            nickname: true,
+            profileUrl: true,
+          },
+        },
+      },
+    });
+    const messages = result.reverse().map((res) => ({
+      id: res.id,
+      userId: res.userId,
+      nickname: res.users.nickname,
+      profileUrl: res.users.profileUrl,
+      content: res.content,
+      createdAt: res.createdAt,
+    }));
+
+    return {
+      success: true,
+      message: '메세지 조회에 성공했습니다.',
+      messages,
+      firstCursor: messages.length ? messages[0].id : null,
+      lastCursor: messages.length ? messages[messages.length - 1].id : null,
     };
   }
 }
