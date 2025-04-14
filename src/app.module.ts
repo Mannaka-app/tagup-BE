@@ -11,8 +11,8 @@ import { GameModule } from './modules/games/games.module';
 import { S3Service } from './s3/s3.service';
 import { S3Module } from './s3/s3.module';
 import { CheerModule } from './modules/cheer/cheer.module';
-import { FeedsModule } from './feeds/feeds.module';
-import { ChatModule } from './chat/chat.module';
+import { FeedsModule } from './modules/feeds/feeds.module';
+import { ChatModule } from './modules/chat/chat.module';
 
 @Module({
   imports: [
