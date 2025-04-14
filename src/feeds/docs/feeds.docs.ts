@@ -3,6 +3,7 @@ import {
   ApiConsumes,
   ApiOperation,
   ApiParam,
+  ApiQuery,
   ApiResponse,
 } from '@nestjs/swagger';
 
@@ -90,6 +91,13 @@ export const getFeedsDocs = {
     description: '유저 팀 기준으로 전체 피드를 조회합니다.',
   }),
 
+  ApiQuery: ApiQuery({
+    name: 'cursor',
+    required: true,
+    type: Number,
+    description: '기준이 되는 메세지 ID',
+  }),
+
   ApiResponse: ApiResponse({
     status: 200,
     description: '피드 조회 성공',
@@ -111,6 +119,7 @@ export const getFeedsDocs = {
             isLiked: '내가 좋아요 눌렀는지 여부',
           },
         ],
+        lastCursor: '다음 스크롤에 사용될 커서 값',
       },
     },
   }),

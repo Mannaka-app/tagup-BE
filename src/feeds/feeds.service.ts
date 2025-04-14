@@ -56,13 +56,14 @@ export class FeedsService {
     return { success: true, message: '피드 등록이 완료됐습니다.' };
   }
 
-  async getFeeds(userId: number) {
+  async getFeeds(userId: number, cursor: number) {
     const result = await this.prisma.feeds.findMany({
       orderBy: { id: 'desc' },
+      where: cursor ? { id: { lt: cursor } } : {},
+      take: 20,
       include: {
         users: true,
         FeedImages: true,
-        FeedTags: true,
         likes: true,
         FeedComments: true,
       },
@@ -74,7 +75,7 @@ export class FeedsService {
       feed.push(data);
     }
 
-    return { feed };
+    return { feed, lastCursor: result[feed.length - 1]?.id || null };
   }
 
   async createFeedComment(userId: number, feedId: number, content: string) {

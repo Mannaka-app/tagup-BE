@@ -6,6 +6,7 @@ import {
   Param,
   ParseIntPipe,
   Post,
+  Query,
   UploadedFile,
   UseGuards,
   UseInterceptors,
@@ -56,9 +57,13 @@ export class FeedsController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @getFeedsDocs.ApiOperation
+  @getFeedsDocs.ApiQuery
   @getFeedsDocs.ApiResponse
-  async getFeeds(@CurrentUserId() userId: number) {
-    return await this.feedsService.getFeeds(userId);
+  async getFeeds(
+    @CurrentUserId() userId: number,
+    @Query('cursor') cursor: number,
+  ) {
+    return await this.feedsService.getFeeds(userId, cursor);
   }
 
   @Post(':feedId/comments')
