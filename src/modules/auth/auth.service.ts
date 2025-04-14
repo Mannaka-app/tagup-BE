@@ -64,6 +64,7 @@ export class AuthService {
       });
 
       if (!user) throw new UnauthorizedException('계정이 존재하지 않습니다.');
+      if (!user.active) throw new UnauthorizedException('탈퇴한 계정입니다.');
 
       const validPassword = await bcrypt.compare(
         loginDto.password,
