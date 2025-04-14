@@ -139,4 +139,31 @@ export class UsersService {
       throw new InternalServerErrorException('서버에서 오류가 발생했습니다.');
     }
   }
+
+  // 회원 탈퇴
+  async inactivateUser(userId: number) {
+    await this.prisma.$transaction(async (prisma) => {
+      await prisma.users.update({
+        where: { id: userId },
+        data: {
+          nickname: '탈퇴한 유저',
+          profileUrl: process.env.DEFAULT_PROFILE_URL,
+          team: 0,
+          teamSeletedAt: null,
+          winningRate: null,
+          level: 0,
+          password: null,
+          gender: null,
+          active: false,
+          sub: null,
+        },
+      });
+
+      await prisma.feeds.deleteMany({
+        where: { userId },
+      });
+    });
+
+    return { success: true, message: '회원 탈퇴가 완료되었습니다.' };
+  }
 }

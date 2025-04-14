@@ -2,6 +2,7 @@ import {
   ApiBody,
   ApiConsumes,
   ApiOperation,
+  ApiParam,
   ApiResponse,
 } from '@nestjs/swagger';
 
@@ -240,6 +241,31 @@ export const deleteProfileImageDocs = {
             emoji: '팀 이모지',
           },
         },
+      },
+    },
+  }),
+};
+
+export const inactivateUserDocs = {
+  ApiOperation: ApiOperation({
+    summary: '회원 탈퇴',
+    description: '회원 정보를 비활성화 처리합니다.',
+  }),
+
+  ApiParam: ApiParam({
+    name: 'userId',
+    required: true,
+    type: Number,
+    description: '탈퇴할 유저 ID',
+  }),
+
+  ApiResponse: ApiResponse({
+    status: 200,
+    description: '회원 탈퇴 성공',
+    schema: {
+      example: {
+        success: true,
+        message: '회원 탈퇴가 완료되었습니다.',
       },
     },
   }),

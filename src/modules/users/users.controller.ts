@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  Param,
   Post,
   Put,
   UploadedFile,
@@ -15,6 +16,7 @@ import { UserDetailDto } from './dto/userDetail.dto';
 import {
   deleteProfileImageDocs,
   getAllTeamsDocs,
+  inactivateUserDocs,
   setUserDetailDocs,
   setUserTeamDocs,
   updateProfileImageDocs,
@@ -93,5 +95,15 @@ export class UsersController {
   @deleteProfileImageDocs.ApiResponse
   async deleteProfileImage(@CurrentUserId() userId: number) {
     return await this.usersService.deleteProfileImage(userId);
+  }
+
+  @Delete(':userId')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @inactivateUserDocs.ApiOperation
+  @inactivateUserDocs.ApiParam
+  @inactivateUserDocs.ApiResponse
+  async inactivateUser(@Param('userId') userId: number) {
+    return await this.usersService.inactivateUser(userId);
   }
 }
