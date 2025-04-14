@@ -2,7 +2,7 @@ import { Body, Controller, Post } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
-import { kakaoLoginDocs } from './docs/auth.docs';
+import { kakaoLoginDocs, refreshTokenDocs } from './docs/auth.docs';
 import { ApiBearerAuth } from '@nestjs/swagger';
 
 @Controller('auth')
@@ -26,5 +26,14 @@ export class AuthController {
   @kakaoLoginDocs.ApiResponse
   async kakaoLogin(@Body() idToken: any) {
     return await this.authService.kakaoLogin(idToken);
+  }
+
+  @Post('refresh')
+  @refreshTokenDocs.ApiOperation
+  @refreshTokenDocs.ApiBody
+  @refreshTokenDocs.ApiResponse
+  async refreshToken(@Body() body: { userId: number; refreshToken: string }) {
+    const { userId, refreshToken } = body;
+    return await this.authService.refreshToken(userId, refreshToken);
   }
 }

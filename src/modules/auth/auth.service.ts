@@ -205,4 +205,18 @@ export class AuthService {
       throw new InternalServerErrorException('토큰 생성에 실패했습니다.');
     }
   }
+
+  // 리프레쉬 토큰 검증 후 토큰 재발급
+  async refreshToken(userId: number, refreshToken: string) {
+    const redisToken = await this.redis.get(`refresh:${userId}`);
+    if (redisToken !== refreshToken) {
+      throw new UnauthorizedException('RefreshToken이 유효하지 않습니다.');
+    }
+
+    const { access, refresh } = await this.generateTokens(userId);
+
+    await this.redis.set(`refresh:${userId}`, refresh, 60 * 60 * 24 * 7);
+
+    return { accessToken: access, refreshToken: refresh };
+  }
 }

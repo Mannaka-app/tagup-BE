@@ -52,3 +52,31 @@ export const kakaoLoginDocs = {
     },
   }),
 };
+
+export const refreshTokenDocs = {
+  ApiOperation: ApiOperation({
+    summary: '리프레시 토큰 재발급',
+    description:
+      'AccessToken 만료 시 RefreshToken으로 새로운 토큰을 발급받습니다.',
+  }),
+
+  ApiBody: ApiBody({
+    schema: {
+      example: {
+        userId: '유저 아이디',
+        refreshToken: '리프레시 토큰 값',
+      },
+    },
+  }),
+
+  ApiResponse: ApiResponse({
+    status: 200,
+    description: '토큰 재발급 성공',
+    schema: {
+      example: {
+        accessToken: '새로 발급된 accessToken',
+        refreshToken: '새로 발급된 refreshToken',
+      },
+    },
+  }),
+};
