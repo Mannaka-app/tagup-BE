@@ -147,4 +147,28 @@ export class FeedsService {
 
     return { success: true, message: '피드가 삭제되었습니다.' };
   }
+
+  async handleFeedLikes(feedId: number, userId: number) {
+    let message;
+
+    await this.prisma.$transaction(async (prisma) => {
+      const exist = await prisma.feedLike.findFirst({
+        where: { feedId, userId },
+      });
+
+      if (exist) {
+        await prisma.feedLike.deleteMany({
+          where: { feedId, userId },
+        });
+        message = '좋아요가 삭제되었습니다.';
+      } else {
+        await prisma.feedLike.create({
+          data: { feedId, userId },
+        });
+        message = '좋아요가 추가되었습니다.';
+      }
+    });
+
+    return { success: true, message };
+  }
 }

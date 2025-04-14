@@ -22,6 +22,7 @@ import {
   deleteFeedDocs,
   getFeedCommentsDocs,
   getFeedsDocs,
+  handleFeedLikesDocs,
   uploadFeedImageDocs,
 } from './docs/feeds.docs';
 import { ApiBearerAuth } from '@nestjs/swagger';
@@ -106,5 +107,17 @@ export class FeedsController {
     @Param('feedId', ParseIntPipe) feedId: number,
   ) {
     return await this.feedsService.deleteFeed(feedId, userId);
+  }
+
+  @Post(':feedId/likes')
+  @UseGuards(JwtAuthGuard)
+  @handleFeedLikesDocs.ApiOperation
+  @handleFeedLikesDocs.ApiParam
+  @handleFeedLikesDocs.ApiResponse
+  async handleFeedLikes(
+    @CurrentUserId() userId: number,
+    @Param('feedId', ParseIntPipe) feedId: number,
+  ) {
+    return await this.feedsService.handleFeedLikes(feedId, userId);
   }
 }

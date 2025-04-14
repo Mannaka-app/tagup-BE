@@ -218,3 +218,27 @@ export const deleteFeedDocs = {
     },
   }),
 };
+
+export const handleFeedLikesDocs = {
+  ApiOperation: ApiOperation({
+    summary: '피드 좋아요 / 취소',
+    description: '피드 좋아요를 토글합니다. (있으면 취소 / 없으면 추가)',
+  }),
+
+  ApiParam: ApiParam({
+    name: 'feedId',
+    required: true,
+    description: '좋아요 처리할 피드 ID',
+  }),
+
+  ApiResponse: ApiResponse({
+    status: 200,
+    description: '피드 좋아요 처리 성공',
+    schema: {
+      example: {
+        success: true,
+        message: '좋아요가 추가되었습니다.', // or '좋아요가 삭제되었습니다.'
+      },
+    },
+  }),
+};
