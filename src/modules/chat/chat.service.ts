@@ -1,4 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import {
+  ForbiddenException,
+  HttpException,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { GetMessagesDto } from './dto/getMessages.dto';
 
@@ -7,126 +12,154 @@ export class ChatService {
   constructor(private readonly prisma: PrismaService) {}
 
   async getAllRooms() {
-    const result = await this.prisma.rooms.findMany({
-      include: {
-        RoomUsers: true,
-        Messages: {
-          orderBy: { createdAt: 'desc' },
-          take: 1,
+    try {
+      const result = await this.prisma.rooms.findMany({
+        include: {
+          RoomUsers: true,
+          Messages: {
+            orderBy: { createdAt: 'desc' },
+            take: 1,
+          },
         },
-      },
-    });
+      });
 
-    const rooms = result.map((res) => ({
-      id: res.id,
-      title: res.title,
-      createAt: res.createdAt,
-      members: res.RoomUsers.length,
-      lastMessage: res.Messages[0] ? res.Messages[0].createdAt : null,
-    }));
+      const rooms = result.map((res) => ({
+        id: res.id,
+        title: res.title,
+        createAt: res.createdAt,
+        members: res.RoomUsers.length,
+        lastMessage: res.Messages[0] ? res.Messages[0].createdAt : null,
+      }));
 
-    return {
-      success: true,
-      message: '전체 채팅방 조회에 성공했습니다.',
-      rooms,
-    };
+      return {
+        success: true,
+        message: '전체 채팅방 조회에 성공했습니다.',
+        rooms,
+      };
+    } catch (error) {
+      console.error('전체 채팅방 조회 중 오류 발생', error);
+      throw new InternalServerErrorException('서버에서 오류가 발생했습니다.');
+    }
   }
 
   async getRecentMessages(userId: number, roomId: number) {
-    const userData = await this.prisma.roomUsers.findMany({
-      where: { userId, roomId },
-    });
+    try {
+      const userData = await this.prisma.roomUsers.findFirst({
+        where: { userId, roomId },
+      });
 
-    const joinedAt = userData[0].joinedAt;
+      if (!userData) {
+        throw new ForbiddenException('채팅방에 참여 중인 유저가 아닙니다.');
+      }
 
-    const result = await this.prisma.messages.findMany({
-      where: { roomId, createdAt: { gt: joinedAt } },
-      orderBy: { id: 'desc' },
-      take: 15,
-      include: {
-        users: {
-          select: {
-            nickname: true,
-            profileUrl: true,
+      const joinedAt = userData.joinedAt;
+
+      const result = await this.prisma.messages.findMany({
+        where: { roomId, createdAt: { gt: joinedAt } },
+        orderBy: { id: 'desc' },
+        take: 15,
+        include: {
+          users: {
+            select: {
+              nickname: true,
+              profileUrl: true,
+            },
           },
         },
-      },
-    });
+      });
 
-    const messages = result.reverse().map((res) => ({
-      id: res.id,
-      userId: res.userId,
-      nickname: res.users.nickname,
-      profileUrl: res.users.profileUrl,
-      content: res.content,
-      createdAt: res.createdAt,
-    }));
+      const messages = result.reverse().map((res) => ({
+        id: res.id,
+        userId: res.userId,
+        nickname: res.users.nickname,
+        profileUrl: res.users.profileUrl,
+        content: res.content,
+        createdAt: res.createdAt,
+      }));
 
-    return { messages };
+      return { messages };
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+
+      console.error('최근 메세지 조회 중 오류 발생:', error);
+      throw new InternalServerErrorException('서버에서 오류가 발생했습니다.');
+    }
   }
 
   async getMyRooms(userId: number) {
-    const result = await this.prisma.rooms.findMany({
-      where: { RoomUsers: { some: { userId } } },
-      include: {
-        RoomUsers: true,
-        Messages: {
-          orderBy: { createdAt: 'desc' },
-          take: 1,
+    try {
+      const result = await this.prisma.rooms.findMany({
+        where: { RoomUsers: { some: { userId } } },
+        include: {
+          RoomUsers: true,
+          Messages: {
+            orderBy: { createdAt: 'desc' },
+            take: 1,
+          },
         },
-      },
-    });
+      });
 
-    const rooms = result.map((res) => ({
-      id: res.id,
-      title: res.title,
-      createAt: res.createdAt,
-      members: res.RoomUsers.length,
-      lastMessage: res.Messages[0] ? res.Messages[0].createdAt : null,
-    }));
+      const rooms = result.map((res) => ({
+        id: res.id,
+        title: res.title,
+        createAt: res.createdAt,
+        members: res.RoomUsers.length,
+        lastMessage: res.Messages[0] ? res.Messages[0].createdAt : null,
+      }));
 
-    return {
-      success: true,
-      message: '참여중인 채팅방 조회에 성공했습니다.',
-      rooms,
-    };
+      return {
+        success: true,
+        message: '참여중인 채팅방 조회에 성공했습니다.',
+        rooms,
+      };
+    } catch (error) {
+      console.error('참여 중인 채팅방 조회 중 오류 발생:', error);
+      throw new InternalServerErrorException('서버에서 오류가 발생했습니다.');
+    }
   }
 
   async getMessages(roomId: number, getMessagesDto: GetMessagesDto) {
-    const { cursor, direction } = getMessagesDto;
-    const limit = 15;
+    try {
+      const { cursor, direction } = getMessagesDto;
+      const limit = 15;
 
-    const result = await this.prisma.messages.findMany({
-      where: {
-        roomId,
-        id: direction === 'down' ? { gt: cursor } : { lt: cursor },
-      },
-      orderBy: { id: 'desc' },
-      take: limit,
-      include: {
-        users: {
-          select: {
-            nickname: true,
-            profileUrl: true,
+      const result = await this.prisma.messages.findMany({
+        where: {
+          roomId,
+          id: direction === 'down' ? { gt: cursor } : { lt: cursor },
+        },
+        orderBy: { id: 'desc' },
+        take: limit,
+        include: {
+          users: {
+            select: {
+              nickname: true,
+              profileUrl: true,
+            },
           },
         },
-      },
-    });
-    const messages = result.reverse().map((res) => ({
-      id: res.id,
-      userId: res.userId,
-      nickname: res.users.nickname,
-      profileUrl: res.users.profileUrl,
-      content: res.content,
-      createdAt: res.createdAt,
-    }));
+      });
+      const messages = result.reverse().map((res) => ({
+        id: res.id,
+        userId: res.userId,
+        nickname: res.users.nickname,
+        profileUrl: res.users.profileUrl,
+        content: res.content,
+        createdAt: res.createdAt,
+      }));
 
-    return {
-      success: true,
-      message: '메세지 조회에 성공했습니다.',
-      messages,
-      firstCursor: messages.length ? messages[0].id : null,
-      lastCursor: messages.length ? messages[messages.length - 1].id : null,
-    };
+      return {
+        success: true,
+        message: '메세지 조회에 성공했습니다.',
+        messages,
+        firstCursor: messages.length ? messages[0].id : null,
+        lastCursor: messages.length ? messages[messages.length - 1].id : null,
+      };
+    } catch (error) {
+      console.error('메세지 무한스크롤 중 오류 발생 :', error);
+      throw new InternalServerErrorException('서버에서 오류가 발생했습니다.');
+    }
   }
 }
