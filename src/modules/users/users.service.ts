@@ -138,7 +138,6 @@ export class UsersService {
             password: null,
             gender: null,
             active: false,
-            sub: null,
           },
         });
 
