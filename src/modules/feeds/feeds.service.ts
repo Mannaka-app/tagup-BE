@@ -219,4 +219,33 @@ export class FeedsService {
       throw new InternalServerErrorException('서버에서 오류가 발생했습니다.');
     }
   }
+
+  async deleteComment(commentId: number, userId: number) {
+    try {
+      const comment = await this.prisma.feedComments.findUnique({
+        where: { id: commentId },
+      });
+
+      if (!comment) {
+        throw new NotFoundException('댓글을 찾을 수 없습니다.');
+      }
+
+      if (comment.userId !== userId) {
+        throw new ForbiddenException('댓글 삭제 권한이 없습니다.');
+      }
+
+      await this.prisma.feedComments.delete({
+        where: { id: commentId },
+      });
+
+      return { success: true, message: '댓글이 삭제되었습니다.' };
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+
+      console.error('피드 댓글 삭제 중 오류 발생', error);
+      throw new InternalServerErrorException('서버에서 오류가 발생했습니다.');
+    }
+  }
 }

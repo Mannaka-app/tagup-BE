@@ -269,3 +269,28 @@ export const getFeedByIdDocs = {
     },
   }),
 };
+
+export const deleteCommentDocs = {
+  ApiOperation: ApiOperation({
+    summary: '피드 댓글 삭제',
+    description:
+      '해당 댓글 ID에 대한 댓글을 삭제합니다. 작성자 본인만 삭제할 수 있습니다.',
+  }),
+
+  ApiParam: ApiParam({
+    name: 'commentId',
+    required: true,
+    description: '댓글 ID',
+  }),
+
+  ApiResponse: ApiResponse({
+    status: 200,
+    description: '댓글 삭제 성공',
+    schema: {
+      example: {
+        success: true,
+        message: '댓글 삭제 완료',
+      },
+    },
+  }),
+};

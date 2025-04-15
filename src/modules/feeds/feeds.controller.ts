@@ -19,6 +19,7 @@ import { CurrentUserId } from 'src/common/decorators/current-user-id.decorator';
 import {
   createFeedCommentDocs,
   createFeedDocs,
+  deleteCommentDocs,
   deleteFeedDocs,
   getFeedByIdDocs,
   getFeedCommentsDocs,
@@ -132,5 +133,18 @@ export class FeedsController {
     @Param('feedId', ParseIntPipe) feedId: number,
   ) {
     return await this.feedsService.handleFeedLikes(feedId, userId);
+  }
+
+  @Delete(':feedId/comments/:commentId')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @deleteCommentDocs.ApiOperation
+  @deleteCommentDocs.ApiParam
+  @deleteCommentDocs.ApiResponse
+  async deleteComment(
+    @CurrentUserId() userId: number,
+    @Param('commentId', ParseIntPipe) commentId: number,
+  ) {
+    return await this.feedsService.deleteComment(commentId, userId);
   }
 }
