@@ -111,6 +111,7 @@ export class FeedsController {
 
   @Post(':feedId/likes')
   @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   @handleFeedLikesDocs.ApiOperation
   @handleFeedLikesDocs.ApiParam
   @handleFeedLikesDocs.ApiResponse
