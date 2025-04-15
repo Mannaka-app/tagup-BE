@@ -1,5 +1,4 @@
 import {
-  BadRequestException,
   ForbiddenException,
   HttpException,
   Injectable,
@@ -18,28 +17,9 @@ export class FeedsService {
   ) {}
 
   async uploadFeedImage(file: Express.Multer.File) {
-    try {
-      const fileType = file.mimetype.split('/')[1];
-      if (!fileType) {
-        throw new BadRequestException('유효하지 않은 파일 형식입니다.');
-      }
+    const imageUrl = await this.s3.uploadImageToS3(file, 'feed');
 
-      const imageUrl = await this.s3.uploadImage(
-        8,
-        file.buffer,
-        fileType,
-        'feed/',
-      );
-
-      return { success: true, imageUrl };
-    } catch (error) {
-      if (error instanceof HttpException) {
-        throw error;
-      }
-
-      console.error('이미지 업로드 중 오류 발생', error);
-      throw new InternalServerErrorException('이미지 업로드에 실패했습니다.');
-    }
+    return { success: true, imageUrl };
   }
 
   async createFeed(userId: number, createFeedDto: CreateFeedDto) {
