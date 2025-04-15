@@ -17,7 +17,9 @@ import {
   getCheerTalksDocs,
   deleteCheerTalkDocs,
 } from './docs/cheer.docs';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Cheer')
 @Controller('cheer')
 export class CheerController {
   constructor(private readonly cheerService: CheerService) {}

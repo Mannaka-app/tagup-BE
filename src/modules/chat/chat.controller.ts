@@ -17,10 +17,11 @@ import {
   getMessagesDocs,
   getMyRoomsDocs,
 } from './docs/chat.docs';
-import { ApiBearerAuth } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { GetMessagesDto } from './dto/getMessages.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 
+@ApiTags('Chat')
 @Controller('chat')
 export class ChatController {
   constructor(private readonly chatService: ChatService) {}

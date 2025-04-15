@@ -26,8 +26,9 @@ import {
   handleFeedLikesDocs,
   uploadFeedImageDocs,
 } from './docs/feeds.docs';
-import { ApiBearerAuth } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Feeds')
 @Controller('feeds')
 export class FeedsController {
   constructor(private readonly feedsService: FeedsService) {}

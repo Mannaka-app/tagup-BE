@@ -22,10 +22,11 @@ import {
   updateProfileImageDocs,
   uploadProfileImageDocs,
 } from './docs/users.docs';
-import { ApiBearerAuth } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { CurrentUserId } from 'src/common/decorators/current-user-id.decorator';
 
+@ApiTags('Users')
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
