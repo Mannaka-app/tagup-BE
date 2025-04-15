@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   ForbiddenException,
+  HttpException,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
@@ -32,6 +33,10 @@ export class FeedsService {
 
       return { success: true, imageUrl };
     } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+
       console.error('이미지 업로드 중 오류 발생', error);
       throw new InternalServerErrorException('이미지 업로드에 실패했습니다.');
     }
@@ -40,75 +45,99 @@ export class FeedsService {
   async createFeed(userId: number, createFeedDto: CreateFeedDto) {
     const { content, imageUrls } = createFeedDto;
 
-    await this.prisma.$transaction(async (prisma) => {
-      const feed = await prisma.feeds.create({
-        data: { userId, content },
+    try {
+      await this.prisma.$transaction(async (prisma) => {
+        const feed = await prisma.feeds.create({
+          data: { userId, content },
+        });
+
+        await prisma.feedImages.createMany({
+          data: imageUrls.map((url) => ({
+            feedId: feed.id,
+            url,
+          })),
+        });
       });
 
-      await prisma.feedImages.createMany({
-        data: imageUrls.map((url) => ({
-          feedId: feed.id,
-          url,
-        })),
-      });
-    });
-
-    return { success: true, message: '피드 등록이 완료됐습니다.' };
+      return { success: true, message: '피드 등록이 완료됐습니다.' };
+    } catch (error) {
+      console.error('피드 등록 중 오류 발생', error);
+      throw new InternalServerErrorException('서버에서 오류가 발생했습니다.');
+    }
   }
 
   async getFeeds(userId: number, cursor: number) {
-    const result = await this.prisma.feeds.findMany({
-      orderBy: { id: 'desc' },
-      where: cursor ? { id: { lt: cursor } } : {},
-      take: 20,
-      include: {
-        users: true,
-        FeedImages: true,
-        likes: true,
-        FeedComments: true,
-      },
-    });
+    try {
+      const result = await this.prisma.feeds.findMany({
+        orderBy: { id: 'desc' },
+        where: cursor ? { id: { lt: cursor } } : {},
+        take: 20,
+        include: {
+          users: true,
+          FeedImages: true,
+          likes: true,
+          FeedComments: true,
+        },
+      });
 
-    const feed = [];
-    for (const res of result) {
-      const data = await this.formatFeed(res, userId);
-      feed.push(data);
+      const feed = [];
+      for (const res of result) {
+        const data = await this.formatFeed(res, userId);
+        feed.push(data);
+      }
+
+      return { feed, lastCursor: result[feed.length - 1]?.id || null };
+    } catch (error) {
+      console.error('피드 전체 조회 중 오류 발생', error);
+      throw new InternalServerErrorException('서버에서 오류가 발생했습니다.');
     }
-
-    return { feed, lastCursor: result[feed.length - 1]?.id || null };
   }
 
   async createFeedComment(userId: number, feedId: number, content: string) {
-    await this.prisma.feedComments.create({
-      data: { userId, feedId, content },
-    });
+    try {
+      await this.prisma.feedComments.create({
+        data: { userId, feedId, content },
+      });
 
-    return { success: true, message: '댓글이 등록되었습니다.' };
+      return { success: true, message: '댓글이 등록되었습니다.' };
+    } catch (error) {
+      console.error('댓글 작성 중 오류 발생', error);
+      throw new InternalServerErrorException('서버에서 오류가 발생했습니다.');
+    }
   }
 
   async getFeedComments(feedId: number) {
-    const result = await this.prisma.feeds.findUnique({
-      where: { id: feedId },
-      select: {
-        FeedComments: { include: { users: true } },
-      },
-    });
+    try {
+      const result = await this.prisma.feeds.findUnique({
+        where: { id: feedId },
+        select: {
+          FeedComments: { include: { users: true } },
+        },
+      });
 
-    if (!result) {
-      throw new NotFoundException('피드를 찾을 수 없습니다.');
+      if (!result) {
+        throw new NotFoundException('피드를 찾을 수 없습니다.');
+      }
+
+      const comment = result.FeedComments.map((res) => ({
+        id: res.id,
+        userId: res.userId,
+        nickName: res.users.nickname,
+        profileUrl: res.users.profileUrl,
+        userLevel: res.users.level,
+        content: res.content,
+        createdAt: res.createdAt,
+      }));
+
+      return { comment };
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+
+      console.error('피드 댓글 조회 중 오류 발생', error);
+      throw new InternalServerErrorException('서버에서 오류가 발생했습니다.');
     }
-
-    const comment = result.FeedComments.map((res) => ({
-      id: res.id,
-      userId: res.userId,
-      nickName: res.users.nickname,
-      profileUrl: res.users.profileUrl,
-      userLevel: res.users.level,
-      content: res.content,
-      createdAt: res.createdAt,
-    }));
-
-    return { comment };
   }
 
   async formatFeed(result, userId: number) {
@@ -129,46 +158,60 @@ export class FeedsService {
   }
 
   async deleteFeed(feedId: number, userId: number) {
-    const feed = await this.prisma.feeds.findUnique({
-      where: { id: feedId },
-    });
+    try {
+      const feed = await this.prisma.feeds.findUnique({
+        where: { id: feedId },
+      });
 
-    if (!feed) {
-      throw new NotFoundException('피드를 찾을 수 없습니다.');
+      if (!feed) {
+        throw new NotFoundException('피드를 찾을 수 없습니다.');
+      }
+
+      if (feed.userId !== userId) {
+        throw new ForbiddenException('권한이 없습니다.');
+      }
+
+      await this.prisma.feeds.delete({
+        where: { id: feedId },
+      });
+
+      return { success: true, message: '피드가 삭제되었습니다.' };
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+
+      console.error('피드 삭제 중 오류 발생', error);
+      throw new InternalServerErrorException('서버에서 오류가 발생했습니다.');
     }
-
-    if (feed.userId !== userId) {
-      throw new ForbiddenException('권한이 없습니다.');
-    }
-
-    await this.prisma.feeds.delete({
-      where: { id: feedId },
-    });
-
-    return { success: true, message: '피드가 삭제되었습니다.' };
   }
 
   async handleFeedLikes(feedId: number, userId: number) {
-    let message;
+    try {
+      let message;
 
-    await this.prisma.$transaction(async (prisma) => {
-      const exist = await prisma.feedLike.findFirst({
-        where: { feedId, userId },
-      });
-
-      if (exist) {
-        await prisma.feedLike.deleteMany({
+      await this.prisma.$transaction(async (prisma) => {
+        const exist = await prisma.feedLike.findFirst({
           where: { feedId, userId },
         });
-        message = '좋아요가 삭제되었습니다.';
-      } else {
-        await prisma.feedLike.create({
-          data: { feedId, userId },
-        });
-        message = '좋아요가 추가되었습니다.';
-      }
-    });
 
-    return { success: true, message };
+        if (exist) {
+          await prisma.feedLike.deleteMany({
+            where: { feedId, userId },
+          });
+          message = '좋아요가 삭제되었습니다.';
+        } else {
+          await prisma.feedLike.create({
+            data: { feedId, userId },
+          });
+          message = '좋아요가 추가되었습니다.';
+        }
+      });
+
+      return { success: true, message };
+    } catch (error) {
+      console.error('피드 좋아요 토글 중 오류 발생', error);
+      throw new InternalServerErrorException('서버에서 오류가 발생했습니다.');
+    }
   }
 }
