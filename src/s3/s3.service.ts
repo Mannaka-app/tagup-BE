@@ -1,4 +1,8 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { S3 } from 'aws-sdk';
 import * as crypto from 'crypto';
 
@@ -34,6 +38,32 @@ export class S3Service {
     } catch (error) {
       console.error('S3 Upload Error:', error); // 에러 로깅
       throw new InternalServerErrorException('S3 업로드 중 오류 발생');
+    }
+  }
+
+  async uploadImageToS3(file: Express.Multer.File, prefix: string) {
+    if (!file) {
+      throw new BadRequestException('파일이 제공되지 않았습니다.');
+    }
+
+    const fileType = file.mimetype.split('/')[1];
+
+    if (!fileType) {
+      throw new BadRequestException('유효하지 않은 파일 형식입니다.');
+    }
+
+    try {
+      const imageUrl = await this.uploadImage(
+        8,
+        file.buffer,
+        fileType,
+        `${prefix}/`,
+      );
+
+      return { success: true, imageUrl };
+    } catch (error) {
+      console.error('이미지 업로드 중 오류 발생', error);
+      throw new InternalServerErrorException('이미지 업로드에 실패했습니다.');
     }
   }
 }
