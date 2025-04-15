@@ -46,27 +46,28 @@ export class FeedsService {
     }
   }
 
-  async getFeeds(userId: number, cursor: number) {
+  async getFeeds(cursor: number) {
     try {
       const result = await this.prisma.feeds.findMany({
         orderBy: { id: 'desc' },
         where: cursor ? { id: { lt: cursor } } : {},
         take: 20,
-        include: {
-          users: true,
-          FeedImages: true,
-          likes: true,
-          FeedComments: true,
+        select: {
+          id: true,
+          FeedImages: { select: { url: true } },
         },
       });
 
-      const feed = [];
-      for (const res of result) {
-        const data = await this.formatFeed(res, userId);
-        feed.push(data);
-      }
+      const feed = result.map((res) => ({
+        id: res.id,
+        image: res.FeedImages[0].url,
+      }));
 
-      return { feed, lastCursor: result[feed.length - 1]?.id || null };
+      return {
+        success: true,
+        feed,
+        lastCursor: result[feed.length - 1]?.id || null,
+      };
     } catch (error) {
       console.error('피드 전체 조회 중 오류 발생', error);
       throw new InternalServerErrorException('서버에서 오류가 발생했습니다.');

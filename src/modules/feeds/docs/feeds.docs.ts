@@ -88,12 +88,12 @@ export const createFeedDocs = {
 export const getFeedsDocs = {
   ApiOperation: ApiOperation({
     summary: '피드 전체 조회',
-    description: '유저 팀 기준으로 전체 피드를 조회합니다.',
+    description: '전체 피드를 조회합니다.',
   }),
 
   ApiQuery: ApiQuery({
     name: 'cursor',
-    required: true,
+    required: false,
     type: Number,
     description: '기준이 되는 메세지 ID',
   }),
@@ -106,17 +106,7 @@ export const getFeedsDocs = {
         feed: [
           {
             id: '피드 아이디',
-            userId: '작성한 유저 아이디',
-            userTeamId: '유저가 응원하는 팀 ID',
-            nickName: '유저 닉네임',
-            profileUrl: '유저 프로필 이미지',
-            userLevel: '유저 레벨',
-            content: '피드 내용',
-            createdAt: '피드 작성 시간',
-            images: ['피드 이미지1', '피드 이미지2'],
-            comments: '댓글 수',
-            likes: '좋아요 수',
-            isLiked: '내가 좋아요 눌렀는지 여부',
+            image: '피드 썸네일 url',
           },
         ],
         lastCursor: '다음 스크롤에 사용될 커서 값',

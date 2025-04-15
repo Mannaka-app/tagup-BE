@@ -60,11 +60,8 @@ export class FeedsController {
   @getFeedsDocs.ApiOperation
   @getFeedsDocs.ApiQuery
   @getFeedsDocs.ApiResponse
-  async getFeeds(
-    @CurrentUserId() userId: number,
-    @Query('cursor') cursor: number,
-  ) {
-    return await this.feedsService.getFeeds(userId, cursor);
+  async getFeeds(@Query('cursor') cursor: number) {
+    return await this.feedsService.getFeeds(cursor);
   }
 
   @Post(':feedId/comments')
