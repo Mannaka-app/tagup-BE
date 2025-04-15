@@ -6,10 +6,14 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { GetMessagesDto } from './dto/getMessages.dto';
+import { S3Service } from 'src/s3/s3.service';
 
 @Injectable()
 export class ChatService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly s3: S3Service,
+  ) {}
 
   async getAllRooms() {
     try {
@@ -161,5 +165,11 @@ export class ChatService {
       console.error('메세지 무한스크롤 중 오류 발생 :', error);
       throw new InternalServerErrorException('서버에서 오류가 발생했습니다.');
     }
+  }
+
+  async uploadChatImage(file: Express.Multer.File) {
+    const imageUrl = await this.s3.uploadImageToS3(file, 'chat');
+
+    return { success: true, imageUrl };
   }
 }

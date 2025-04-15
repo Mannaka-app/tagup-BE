@@ -3,8 +3,11 @@ import {
   Get,
   Param,
   ParseIntPipe,
+  Post,
   Query,
+  UploadedFile,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { ChatService } from './chat.service';
 import { JwtAuthGuard } from 'src/modules/auth/guards/jwt-auth.guard';
@@ -16,6 +19,7 @@ import {
 } from './docs/chat.docs';
 import { ApiBearerAuth } from '@nestjs/swagger';
 import { GetMessagesDto } from './dto/getMessages.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('chat')
 export class ChatController {
@@ -48,5 +52,11 @@ export class ChatController {
     @Query() getMessagesDto: GetMessagesDto,
   ) {
     return await this.chatService.getMessages(roomId, getMessagesDto);
+  }
+
+  @Post('image')
+  @UseInterceptors(FileInterceptor('file'))
+  async uploadChatImage(@UploadedFile() file: Express.Multer.File) {
+    return await this.chatService.uploadChatImage(file);
   }
 }
