@@ -13,7 +13,7 @@ scp -i /Users/donghyun/Downloads/back.pem -r dist/ prisma/ package.json package-
 echo "${GREEN}🔄 3. EC2 접속 후 npm install, prisma generate & PM2 재시작 중...${NC}"
 ssh -i /Users/donghyun/Downloads/back.pem ubuntu@ec2-3-34-44-18.ap-northeast-2.compute.amazonaws.com << 'EOF'
   cd ~/tagup-BE
-  npm install
+  npm install --legacy-peer-deps
   npx prisma generate
   pm2 restart ecosystem.config.js
   echo "✅ PM2 재시작 완료!"
