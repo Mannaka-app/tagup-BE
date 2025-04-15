@@ -42,7 +42,7 @@ export class UsersService {
         user,
       };
     } catch (error) {
-      console.error(error);
+      console.error('성별 닉네임 설정 중 오류 발생 ', error);
       throw new InternalServerErrorException('서버에서 오류가 발생했습니다.');
     }
   }
@@ -52,7 +52,7 @@ export class UsersService {
     try {
       return await this.prisma.teams.findMany({ where: { id: { gt: 0 } } });
     } catch (error) {
-      console.error(error);
+      console.error('전체 팀 조회 중 오류 발생 ', error);
       throw new InternalServerErrorException('서버에서 오류가 발생했습니다.');
     }
   }
@@ -73,7 +73,7 @@ export class UsersService {
 
       return { sucess: true, message: '응원 팀 설정이 완료됐습니다.', user };
     } catch (error) {
-      console.error(error);
+      console.error('응원 팀 설정 중 오류 발생 ', error);
       throw new InternalServerErrorException('서버에서 오류가 발생했습니다.');
     }
   }
@@ -120,7 +120,7 @@ export class UsersService {
         user,
       };
     } catch (error) {
-      console.error(error);
+      console.error('프로필 사진 업데이트 중 오류 발생 ', error);
       throw new InternalServerErrorException('서버에서 오류가 발생했습니다.');
     }
   }
@@ -135,35 +135,40 @@ export class UsersService {
 
       return { success: true, message: '프로필 사진이 삭제되었습니다.', user };
     } catch (error) {
-      console.error(error);
+      console.error('프로필 사진 삭제 중 오류 발생 ', error);
       throw new InternalServerErrorException('서버에서 오류가 발생했습니다.');
     }
   }
 
   // 회원 탈퇴
   async inactivateUser(userId: number) {
-    await this.prisma.$transaction(async (prisma) => {
-      await prisma.users.update({
-        where: { id: userId },
-        data: {
-          nickname: '탈퇴한 유저',
-          profileUrl: process.env.DEFAULT_PROFILE_URL,
-          team: 0,
-          teamSeletedAt: null,
-          winningRate: null,
-          level: 0,
-          password: null,
-          gender: null,
-          active: false,
-          sub: null,
-        },
+    try {
+      await this.prisma.$transaction(async (prisma) => {
+        await prisma.users.update({
+          where: { id: userId },
+          data: {
+            nickname: '탈퇴한 유저',
+            profileUrl: process.env.DEFAULT_PROFILE_URL,
+            team: 0,
+            teamSeletedAt: null,
+            winningRate: null,
+            level: 0,
+            password: null,
+            gender: null,
+            active: false,
+            sub: null,
+          },
+        });
+
+        await prisma.feeds.deleteMany({
+          where: { userId },
+        });
       });
 
-      await prisma.feeds.deleteMany({
-        where: { userId },
-      });
-    });
-
-    return { success: true, message: '회원 탈퇴가 완료되었습니다.' };
+      return { success: true, message: '회원 탈퇴가 완료되었습니다.' };
+    } catch (error) {
+      console.error('회원 탈퇴 중 오류 발생 ', error);
+      throw new InternalServerErrorException('서버에서 오류가 발생했습니다.');
+    }
   }
 }
