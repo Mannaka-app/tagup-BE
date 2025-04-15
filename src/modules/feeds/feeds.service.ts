@@ -74,6 +74,30 @@ export class FeedsService {
     }
   }
 
+  async getFeedById(feedId: number, userId: number) {
+    const result = await this.prisma.feeds.findUnique({
+      where: { id: feedId },
+      include: {
+        users: true,
+        FeedImages: true,
+        likes: true,
+        FeedComments: true,
+      },
+    });
+
+    if (!result) {
+      throw new NotFoundException('피드를 찾을 수 없습니다.');
+    }
+    try {
+      const feed = await this.formatFeed(result, userId);
+
+      return { success: true, feed };
+    } catch (error) {
+      console.error('피드 댓글 조회 중 오류 발생', error);
+      throw new InternalServerErrorException('서버에서 오류가 발생했습니다.');
+    }
+  }
+
   async createFeedComment(userId: number, feedId: number, content: string) {
     try {
       await this.prisma.feedComments.create({

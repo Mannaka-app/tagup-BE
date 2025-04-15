@@ -20,6 +20,7 @@ import {
   createFeedCommentDocs,
   createFeedDocs,
   deleteFeedDocs,
+  getFeedByIdDocs,
   getFeedCommentsDocs,
   getFeedsDocs,
   handleFeedLikesDocs,
@@ -62,6 +63,19 @@ export class FeedsController {
   @getFeedsDocs.ApiResponse
   async getFeeds(@Query('cursor') cursor: number) {
     return await this.feedsService.getFeeds(cursor);
+  }
+
+  @Get(':feedId')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @getFeedByIdDocs.ApiOperation
+  @getFeedByIdDocs.ApiParam
+  @getFeedByIdDocs.ApiResponse
+  async getFeedById(
+    @CurrentUserId() userId: number,
+    @Param('feedId', ParseIntPipe) feedId: number,
+  ) {
+    return await this.feedsService.getFeedById(feedId, userId);
   }
 
   @Post(':feedId/comments')
