@@ -17,9 +17,9 @@ export class FeedsService {
   ) {}
 
   async uploadFeedImage(file: Express.Multer.File) {
-    const imageUrl = await this.s3.uploadImageToS3(file, 'feed');
+    const image = await this.s3.uploadImageToS3(file, 'feed');
 
-    return { success: true, imageUrl };
+    return { success: true, imageUrl: image.imageUrl };
   }
 
   async createFeed(userId: number, createFeedDto: CreateFeedDto) {

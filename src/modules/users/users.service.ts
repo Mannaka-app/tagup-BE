@@ -78,8 +78,8 @@ export class UsersService {
   }
 
   async uploadProfileImage(file: Express.Multer.File) {
-    const imageUrl = await this.s3.uploadImageToS3(file, 'profile');
-    return { success: true, imageUrl };
+    const image = await this.s3.uploadImageToS3(file, 'profile');
+    return { success: true, imageUrl: image.imageUrl };
   }
 
   async getUserById(userId: number) {

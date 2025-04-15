@@ -168,8 +168,8 @@ export class ChatService {
   }
 
   async uploadChatImage(file: Express.Multer.File) {
-    const imageUrl = await this.s3.uploadImageToS3(file, 'chat');
+    const image = await this.s3.uploadImageToS3(file, 'chat');
 
-    return { success: true, imageUrl };
+    return { success: true, imageUrl: image.imageUrl };
   }
 }
