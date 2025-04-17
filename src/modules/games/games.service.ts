@@ -5,8 +5,23 @@ import { PrismaService } from 'src/prisma/prisma.service';
 export class GameService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async getGameSchedules() {
+  async getWeeklyGameSchedules() {
+    const now = new Date();
+    const start = new Date(now);
+    start.setDate(now.getDate() - now.getDay() + 1);
+    start.setHours(0, 0, 0, 0);
+
+    const end = new Date(start);
+    end.setDate(start.getDate() + 6);
+    end.setHours(23, 59, 59, 999);
+
     const result = await this.prisma.gameSchedule.findMany({
+      where: {
+        date: {
+          gte: start,
+          lte: end,
+        },
+      },
       orderBy: { date: 'asc' },
 
       include: {
@@ -18,19 +33,29 @@ export class GameService {
 
     const schedules = result.map((res) => ({
       id: res.id,
-      home: res.homeTeam,
-      away: res.awayTeam,
-      stadium: res.stadiumInfo,
       date: res.date,
+      home: {
+        id: res.homeTeam.id,
+        team: res.homeTeam.name,
+        badge: res.homeTeam.badge,
+        logo: res.homeTeam.logo,
+        score: res.homeScore,
+      },
+      away: {
+        id: res.awayTeam.id,
+        team: res.awayTeam.name,
+        badge: res.awayTeam.badge,
+        logo: res.awayTeam.logo,
+        score: res.awayScore,
+      },
+      stadium: {
+        id: res.stadiumInfo.id,
+        name: res.stadiumInfo.name,
+        location: res.stadiumInfo.location,
+      },
       status: res.status,
-      score: res.score,
-      winner: res.win
-        ? res.win == res.homeTeam.id
-          ? res.homeTeam
-          : res.awayTeam
-        : 0,
     }));
 
-    return schedules;
+    return { success: true, schedules };
   }
 }
