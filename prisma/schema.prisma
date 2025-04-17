@@ -59,6 +59,8 @@ model Teams {
   name  String
   color String?
   emoji String?
+  badge String?
+  logo  String?
 
   homeGames GameSchedule[] @relation("HomeTeam")
   awayGames GameSchedule[] @relation("AwayTeam")
@@ -80,22 +82,25 @@ model Stadium {
 model GameSchedule {
   id          Int        @id @default(autoincrement())
   home        Int
+  homeScore   Int        @default(0)
   away        Int
-  stadium     Int
-  date        DateTime   @default(now())
-  score       String
-  win         Int
-  status      GameStatus @default(SCHEDULED)
+  awayScore   Int        @default(0)
+  stadium     Int?
+  date        DateTime
+  status      GameStatus
   homeTeam    Teams      @relation("HomeTeam", fields: [home], references: [id])
   awayTeam    Teams      @relation("AwayTeam", fields: [away], references: [id])
-  stadiumInfo Stadium    @relation(fields: [stadium], references: [id])
+  stadiumInfo Stadium?   @relation(fields: [stadium], references: [id])
 }
 
 enum GameStatus {
-  SCHEDULED
-  ONGOING
-  FINISHED
-  CANCELLED
+  NS
+  IN_PROGRESS
+  FT
+  POST
+  CANC
+  INTR
+  ABD
 }
 
 model Feeds {
