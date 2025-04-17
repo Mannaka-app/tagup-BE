@@ -16,6 +16,7 @@ import {
   getAllRoomsDocs,
   getMessagesDocs,
   getMyRoomsDocs,
+  uploadChatImageDocs,
 } from './docs/chat.docs';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { GetMessagesDto } from './dto/getMessages.dto';
@@ -57,6 +58,10 @@ export class ChatController {
 
   @Post('image')
   @UseInterceptors(FileInterceptor('file'))
+  @uploadChatImageDocs.ApiOperation
+  @uploadChatImageDocs.ApiConsumes
+  @uploadChatImageDocs.ApiBody
+  @uploadChatImageDocs.ApiResponse
   async uploadChatImage(@UploadedFile() file: Express.Multer.File) {
     return await this.chatService.uploadChatImage(file);
   }
