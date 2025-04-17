@@ -5,6 +5,9 @@
   "author": "",
   "private": true,
   "license": "UNLICENSED",
+  "prisma": {
+    "seed": "ts-node src/prisma/seed.ts"
+  },
   "scripts": {
     "build": "NODE_OPTIONS='--max-old-space-size=4096' nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
