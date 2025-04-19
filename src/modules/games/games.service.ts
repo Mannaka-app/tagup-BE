@@ -52,6 +52,33 @@ export class GameService {
     return { success: true, schedules };
   }
 
+  async getMonthlyGameSchedules(month: number, year: number) {
+    const start = new Date(year, month - 1, 1);
+    const end = new Date(year, month, 0);
+
+    start.setHours(0, 0, 0, 0);
+    end.setHours(23, 59, 59, 999);
+
+    const result = await this.prisma.gameSchedule.findMany({
+      where: {
+        date: {
+          gte: start,
+          lte: end,
+        },
+      },
+      include: {
+        homeTeam: true,
+        awayTeam: true,
+        stadiumInfo: true,
+      },
+      orderBy: { date: 'asc' },
+    });
+
+    const schedules = this.scheduleFormat(result);
+
+    return { success: true, schedules };
+  }
+
   scheduleFormat(result) {
     result.map((res) => ({
       id: res.id,

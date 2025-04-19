@@ -19,4 +19,9 @@ export class GameController {
   async getTeamSchedules(@Param('teamId', ParseIntPipe) teamId: number) {
     return await this.gameService.getTeamSchedules(teamId);
   }
+
+  @Get('month/:month')
+  async getMonthlyGameSchedules(@Param('month', ParseIntPipe) month: number) {
+    return await this.gameService.getMonthlyGameSchedules(month, 2025);
+  }
 }
