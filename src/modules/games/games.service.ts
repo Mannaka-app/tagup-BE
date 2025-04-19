@@ -58,4 +58,13 @@ export class GameService {
 
     return { success: true, schedules };
   }
+
+  async getTeamSchedules(teamId: number) {
+    const result = await this.prisma.gameSchedule.findMany({
+      where: { OR: [{ home: teamId }, { away: teamId }] },
+      orderBy: { date: 'asc' },
+    });
+
+    return result;
+  }
 }
