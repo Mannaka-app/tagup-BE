@@ -31,7 +31,29 @@ export class GameService {
       },
     });
 
-    const schedules = result.map((res) => ({
+    const schedules = this.scheduleFormat(result);
+
+    return { success: true, schedules };
+  }
+
+  async getTeamSchedules(teamId: number) {
+    const result = await this.prisma.gameSchedule.findMany({
+      where: { OR: [{ home: teamId }, { away: teamId }] },
+      orderBy: { date: 'asc' },
+      include: {
+        homeTeam: true,
+        awayTeam: true,
+        stadiumInfo: true,
+      },
+    });
+
+    const schedules = this.scheduleFormat(result);
+
+    return { success: true, schedules };
+  }
+
+  scheduleFormat(result) {
+    result.map((res) => ({
       id: res.id,
       date: res.date,
       home: {
@@ -55,15 +77,6 @@ export class GameService {
       },
       status: res.status,
     }));
-
-    return { success: true, schedules };
-  }
-
-  async getTeamSchedules(teamId: number) {
-    const result = await this.prisma.gameSchedule.findMany({
-      where: { OR: [{ home: teamId }, { away: teamId }] },
-      orderBy: { date: 'asc' },
-    });
 
     return result;
   }
