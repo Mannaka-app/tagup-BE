@@ -92,3 +92,52 @@ export const getTeamSchedulesDocs = {
     },
   }),
 };
+
+export const getMonthlySchedulesDocs = {
+  ApiOperation: ApiOperation({
+    summary: '월별 경기 일정 조회',
+    description:
+      '요청한 월(month)의 전체 경기 일정을 조회합니다. (현재는 2025년 기준)',
+  }),
+  ApiParam: ApiParam({
+    name: 'month',
+    type: Number,
+    example: 4,
+    description: '조회할 월 (1~12)',
+  }),
+  ApiResponse: ApiResponse({
+    status: 200,
+    description: '월별 경기 일정 조회 성공',
+    schema: {
+      example: {
+        success: true,
+        schedules: [
+          {
+            id: '경기 ID',
+            date: '경기 일시 (ISO 형식)',
+            home: {
+              id: '홈팀 ID',
+              team: '홈팀 이름',
+              badge: '홈팀 엠블럼 URL',
+              logo: '홈팀 로고 URL',
+              score: '홈팀 점수',
+            },
+            away: {
+              id: '원정팀 ID',
+              team: '원정팀 이름',
+              badge: '원정팀 엠블럼 URL',
+              logo: '원정팀 로고 URL',
+              score: '원정팀 점수',
+            },
+            stadium: {
+              id: '경기장 ID',
+              name: '경기장 이름',
+              location: '경기장 주소',
+            },
+            status: '경기 상태 (예: NS, FT, POST 등)',
+          },
+        ],
+      },
+    },
+  }),
+};

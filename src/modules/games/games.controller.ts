@@ -2,6 +2,7 @@ import { Controller, Get, Param, ParseIntPipe } from '@nestjs/common';
 import { GameService } from './games.service';
 import { ApiTags } from '@nestjs/swagger';
 import {
+  getMonthlySchedulesDocs,
   getTeamSchedulesDocs,
   getWeeklyGameScheduleDocs,
 } from './docs/game.docs';
@@ -27,6 +28,9 @@ export class GameController {
   }
 
   @Get('month/:month')
+  @getMonthlySchedulesDocs.ApiOperation
+  @getMonthlySchedulesDocs.ApiParam
+  @getMonthlySchedulesDocs.ApiResponse
   async getMonthlyGameSchedules(@Param('month', ParseIntPipe) month: number) {
     return await this.gameService.getMonthlyGameSchedules(month, 2025);
   }
