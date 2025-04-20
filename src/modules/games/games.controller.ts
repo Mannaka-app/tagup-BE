@@ -1,7 +1,10 @@
 import { Controller, Get, Param, ParseIntPipe } from '@nestjs/common';
 import { GameService } from './games.service';
 import { ApiTags } from '@nestjs/swagger';
-import { getWeeklyGameScheduleDocs } from './docs/game.docs';
+import {
+  getTeamSchedulesDocs,
+  getWeeklyGameScheduleDocs,
+} from './docs/game.docs';
 
 @ApiTags('Game')
 @Controller('game')
@@ -16,6 +19,9 @@ export class GameController {
   }
 
   @Get(':teamId')
+  @getTeamSchedulesDocs.ApiOperation
+  @getTeamSchedulesDocs.ApiParam
+  @getTeamSchedulesDocs.ApiResponse
   async getTeamSchedules(@Param('teamId', ParseIntPipe) teamId: number) {
     return await this.gameService.getTeamSchedules(teamId);
   }

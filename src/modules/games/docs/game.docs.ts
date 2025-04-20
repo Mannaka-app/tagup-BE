@@ -1,4 +1,4 @@
-import { ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiOperation, ApiParam, ApiResponse } from '@nestjs/swagger';
 
 export const getWeeklyGameScheduleDocs = {
   ApiOperation: ApiOperation({
@@ -10,6 +10,55 @@ export const getWeeklyGameScheduleDocs = {
   ApiResponse: ApiResponse({
     status: 200,
     description: '경기 일정 조회 성공',
+    schema: {
+      example: {
+        success: true,
+        schedules: [
+          {
+            id: '경기 ID',
+            date: '경기 일시 (ISO 형식)',
+            home: {
+              id: '홈팀 ID',
+              team: '홈팀 이름',
+              badge: '홈팀 엠블럼 URL',
+              logo: '홈팀 로고 URL',
+              score: '홈팀 점수',
+            },
+            away: {
+              id: '원정팀 ID',
+              team: '원정팀 이름',
+              badge: '원정팀 엠블럼 URL',
+              logo: '원정팀 로고 URL',
+              score: '원정팀 점수',
+            },
+            stadium: {
+              id: '경기장 ID',
+              name: '경기장 이름',
+              location: '경기장 주소',
+            },
+            status: '경기 상태 (예: NS, FT, POST 등)',
+          },
+        ],
+      },
+    },
+  }),
+};
+
+export const getTeamSchedulesDocs = {
+  ApiOperation: ApiOperation({
+    summary: '특정 팀 경기 일정 조회',
+    description:
+      '해당 팀의 홈경기 및 원정경기를 모두 포함한 전체 경기 일정을 조회합니다.',
+  }),
+  ApiParam: ApiParam({
+    name: 'teamId',
+    type: Number,
+    description: '팀 ID (1~10)',
+    example: 3,
+  }),
+  ApiResponse: ApiResponse({
+    status: 200,
+    description: '팀 경기 일정 조회 성공',
     schema: {
       example: {
         success: true,
