@@ -34,4 +34,9 @@ export class GameController {
   async getMonthlyGameSchedules(@Param('month', ParseIntPipe) month: number) {
     return await this.gameService.getMonthlyGameSchedules(month, 2025);
   }
+
+  @Get('team/rank')
+  async getTeamStandings() {
+    return await this.gameService.getTeamStandings();
+  }
 }

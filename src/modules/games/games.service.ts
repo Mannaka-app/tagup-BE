@@ -107,4 +107,34 @@ export class GameService {
 
     return result;
   }
+
+  async getTeamStandings() {
+    const standings = await this.prisma.teamStandings.findMany({
+      orderBy: { rank: 'asc' },
+      include: {
+        team: {
+          select: {
+            name: true,
+            badge: true,
+          },
+        },
+      },
+    });
+
+    return {
+      success: true,
+      message: '구단 순위 조회에 성공했습니다.',
+      standings: standings.map((s) => ({
+        rank: s.rank,
+        teamId: s.teamId,
+        teamName: s.team.name,
+        badge: s.team.badge,
+        gamesPlayed: s.gamesPlayed,
+        wins: s.wins,
+        losses: s.losses,
+        draws: s.draws,
+        winRate: s.winRate,
+      })),
+    };
+  }
 }
