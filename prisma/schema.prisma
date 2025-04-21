@@ -62,10 +62,30 @@ model Teams {
   badge String?
   logo  String?
 
-  homeGames GameSchedule[] @relation("HomeTeam")
-  awayGames GameSchedule[] @relation("AwayTeam")
-  Users     Users[]
-  Stadium   Stadium[]
+  homeGames     GameSchedule[] @relation("HomeTeam")
+  awayGames     GameSchedule[] @relation("AwayTeam")
+  Users         Users[]
+  Stadium       Stadium[]
+  TeamStandings TeamStandings?
+}
+
+model TeamStandings {
+  id           Int      @id @default(autoincrement())
+  teamId       Int
+  rank         Int
+  gamesPlayed  Int // 경기 수 (G)
+  wins         Int // 승 (W)
+  losses       Int // 패 (L)
+  draws        Int // 무 (D)
+  winRate      Float // 승률 
+  gamesBehind  Float? // 게임차 
+  recentRecord String? // 최근 10경기 
+  streak       String? // 연승/연패
+  updatedAt    DateTime @updatedAt
+
+  team Teams @relation(fields: [teamId], references: [id])
+
+  @@unique([teamId]) // 팀당 하나의 순위만 존재
 }
 
 model Stadium {
