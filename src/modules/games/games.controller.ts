@@ -3,6 +3,7 @@ import { GameService } from './games.service';
 import { ApiTags } from '@nestjs/swagger';
 import {
   getMonthlySchedulesDocs,
+  getTeamRankDocs,
   getTeamSchedulesDocs,
   getWeeklyGameScheduleDocs,
 } from './docs/game.docs';
@@ -36,7 +37,9 @@ export class GameController {
   }
 
   @Get('team/rank')
-  async getTeamStandings() {
-    return await this.gameService.getTeamStandings();
+  @getTeamRankDocs.ApiOperation
+  @getTeamRankDocs.ApiResponse
+  async getTeamRank() {
+    return await this.gameService.getTeamRank();
   }
 }

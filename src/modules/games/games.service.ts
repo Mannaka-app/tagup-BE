@@ -108,7 +108,7 @@ export class GameService {
     return result;
   }
 
-  async getTeamStandings() {
+  async getTeamRank() {
     const standings = await this.prisma.teamStandings.findMany({
       orderBy: { rank: 'asc' },
       include: {

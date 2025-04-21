@@ -141,3 +141,43 @@ export const getMonthlySchedulesDocs = {
     },
   }),
 };
+
+export const getTeamRankDocs = {
+  ApiOperation: ApiOperation({
+    summary: '구단 순위 조회',
+    description: '현재 시즌의 KBO 구단 순위를 조회합니다.',
+  }),
+
+  ApiResponse: ApiResponse({
+    status: 200,
+    description: '구단 순위 조회 성공',
+    schema: {
+      example: {
+        success: true,
+        message: '구단 순위 조회에 성공했습니다.',
+        standings: [
+          {
+            id: 1, // 레코드 ID
+            teamId: 3, // 구단 ID
+            rank: 1, // 순위
+            gamesPlayed: 22, // 경기 수
+            wins: 14, // 승
+            losses: 6, // 패
+            draws: 2, // 무
+            winRate: 0.7, // 승률
+          },
+          {
+            id: 2,
+            teamId: 7,
+            rank: 2,
+            gamesPlayed: 22,
+            wins: 13,
+            losses: 7,
+            draws: 2,
+            winRate: 0.65,
+          },
+        ],
+      },
+    },
+  }),
+};
