@@ -37,8 +37,23 @@ export class GameService {
   }
 
   async getTeamSchedules(teamId: number) {
+    const now = new Date();
+    const start = new Date(now);
+    start.setDate(now.getDate() - now.getDay() + 1);
+    start.setHours(0, 0, 0, 0);
+
+    const end = new Date(start);
+    end.setDate(start.getDate() + 6);
+    end.setHours(23, 59, 59, 999);
+
     const result = await this.prisma.gameSchedule.findMany({
-      where: { OR: [{ home: teamId }, { away: teamId }] },
+      where: {
+        OR: [{ home: teamId }, { away: teamId }],
+        date: {
+          gte: start,
+          lte: end,
+        },
+      },
       orderBy: { date: 'asc' },
       include: {
         homeTeam: true,

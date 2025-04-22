@@ -46,9 +46,9 @@ export const getWeeklyGameScheduleDocs = {
 
 export const getTeamSchedulesDocs = {
   ApiOperation: ApiOperation({
-    summary: '특정 팀 경기 일정 조회',
+    summary: '특정 팀 경기 일정 조회(범위: 이번주)',
     description:
-      '해당 팀의 홈경기 및 원정경기를 모두 포함한 전체 경기 일정을 조회합니다.',
+      '해당 팀의 홈경기 및 원정경기를 모두 포함한 이번 주 경기 일정을 조회합니다.',
   }),
   ApiParam: ApiParam({
     name: 'teamId',
