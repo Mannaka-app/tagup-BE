@@ -36,7 +36,7 @@ export class GameController {
     return await this.gameService.getMonthlyGameSchedules(month, 2025);
   }
 
-  @Get('team/rank')
+  @Get('rank')
   @getTeamRankDocs.ApiOperation
   @getTeamRankDocs.ApiResponse
   async getTeamRank() {
