@@ -20,7 +20,7 @@ export class GameController {
     return await this.gameService.getWeeklyGameSchedules();
   }
 
-  @Get(':teamId')
+  @Get('team/:teamId')
   @getTeamSchedulesDocs.ApiOperation
   @getTeamSchedulesDocs.ApiParam
   @getTeamSchedulesDocs.ApiResponse
