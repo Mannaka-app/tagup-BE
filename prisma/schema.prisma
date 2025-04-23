@@ -67,6 +67,7 @@ model Teams {
   Users         Users[]
   Stadium       Stadium[]
   TeamStandings TeamStandings?
+  CheerRooms    CheerRooms[]
 }
 
 model TeamStandings {
@@ -220,12 +221,24 @@ model RoomUsers {
 }
 
 model Messages {
-  id        Int      @id @default(autoincrement())
-  roomId    Int
-  userId    Int
-  content   String
-  createdAt DateTime @default(now())
+  id          Int      @id @default(autoincrement())
+  roomId      Int?
+  cheerRoomId Int?
+  userId      Int
+  content     String
+  createdAt   DateTime @default(now())
 
-  rooms Rooms @relation(fields: [roomId], references: [id])
-  users Users @relation(fields: [userId], references: [id])
+  rooms      Rooms?      @relation(fields: [roomId], references: [id])
+  users      Users       @relation(fields: [userId], references: [id])
+  cheerRooms CheerRooms? @relation(fields: [cheerRoomId], references: [id])
+}
+
+model CheerRooms {
+  id          Int    @id @default(autoincrement())
+  teamId      Int
+  title       String
+  thumnailUrl String
+
+  teams    Teams      @relation(fields: [teamId], references: [id])
+  Messages Messages[]
 }
