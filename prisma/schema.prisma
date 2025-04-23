@@ -234,10 +234,10 @@ model Messages {
 }
 
 model CheerRooms {
-  id          Int    @id @default(autoincrement())
-  teamId      Int
+  id          Int     @id @default(autoincrement())
+  teamId      Int     @unique
   title       String
-  thumnailUrl String
+  thumnailUrl String?
 
   teams    Teams      @relation(fields: [teamId], references: [id])
   Messages Messages[]
