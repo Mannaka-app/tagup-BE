@@ -37,6 +37,8 @@ export class CheerService {
       createdAt: res.createdAt,
     }));
 
-    return { success: true, messages };
+    const lastCursor = messages[0]?.id || null;
+
+    return { success: true, messages, lastCursor };
   }
 }

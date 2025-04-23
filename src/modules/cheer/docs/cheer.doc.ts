@@ -25,6 +25,7 @@ export const getTeamCheerTalkDocs = {
           title: '채팅방 제목(팀 이름)',
           thumnailUrl: '팀 로고 url',
         },
+        lastCursor: '무한 스크롤 용 커서',
       },
     },
   }),
