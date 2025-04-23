@@ -6,12 +6,14 @@ import {
 import { ChatService } from './chat.service';
 import { Server, Socket } from 'socket.io';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { CheerService } from 'src/modules/cheer/cheer.service';
 
 @WebSocketGateway({ namespace: '/chat', cors: { origin: '*' } })
 export class ChatGateway {
   constructor(
     private readonly chatService: ChatService,
     private readonly prisma: PrismaService,
+    private readonly cheerService: CheerService,
   ) {}
 
   @WebSocketServer() server: Server;
@@ -111,5 +113,17 @@ export class ChatGateway {
 
     // 같은 방에 있는 유저에게 메시지 브로드캐스트
     this.server.to(payload.roomId.toString()).emit('message', response);
+  }
+
+  @SubscribeMessage('joinCheerRoom')
+  async handleJoinCheerRoom(client: Socket, payload: { roomId: number }) {
+    const userId = Number(client.handshake.query.userId);
+    const { roomId } = payload;
+
+    client.join(payload.roomId.toString());
+    console.log(`${userId}번 유저 ${roomId}번 응원톡방 참여`);
+
+    const data = await this.cheerService.getCheerRoomMessages(roomId, 0);
+    client.emit('cheerRoomJoined', { messages: data.messages });
   }
 }

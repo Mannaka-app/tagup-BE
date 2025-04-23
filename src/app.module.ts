@@ -12,7 +12,7 @@ import { S3Service } from './s3/s3.service';
 import { S3Module } from './s3/s3.module';
 import { FeedsModule } from './modules/feeds/feeds.module';
 import { ChatModule } from './modules/chat/chat.module';
-import { CheerModule } from './cheer/cheer.module';
+import { CheerModule } from './modules/cheer/cheer.module';
 
 @Module({
   imports: [
