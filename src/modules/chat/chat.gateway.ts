@@ -86,33 +86,14 @@ export class ChatGateway {
   ) {
     const userId = Number(client.handshake.query.userId);
 
-    const message = await this.prisma.messages.create({
-      data: {
-        roomId: payload.roomId,
-        userId,
-        content: payload.content,
-      },
-      include: {
-        users: {
-          select: {
-            nickname: true,
-            profileUrl: true,
-          },
-        },
-      },
-    });
-
-    const response = {
-      id: message.id,
-      userId: message.userId,
-      nickname: message.users.nickname,
-      profileUrl: message.users.profileUrl,
-      content: message.content,
-      createdAt: message.createdAt,
-    };
+    const message = await this.chatService.createMessage(
+      userId,
+      payload.roomId,
+      payload.content,
+    );
 
     // 같은 방에 있는 유저에게 메시지 브로드캐스트
-    this.server.to(payload.roomId.toString()).emit('message', response);
+    this.server.to(payload.roomId.toString()).emit('message', message);
   }
 
   @SubscribeMessage('joinCheerRoom')
@@ -134,33 +115,14 @@ export class ChatGateway {
   ) {
     const userId = Number(client.handshake.query.userId);
 
-    const message = await this.prisma.messages.create({
-      data: {
-        cheerRoomId: payload.roomId,
-        userId,
-        content: payload.content,
-      },
-      include: {
-        users: {
-          select: {
-            nickname: true,
-            profileUrl: true,
-          },
-        },
-      },
-    });
-
-    const response = {
-      id: message.id,
-      userId: message.userId,
-      nickname: message.users.nickname,
-      profileUrl: message.users.profileUrl,
-      content: message.content,
-      createdAt: message.createdAt,
-    };
+    const message = await this.chatService.createMessage(
+      userId,
+      payload.roomId,
+      payload.content,
+    );
 
     // 같은 방에 있는 유저에게 메시지 브로드캐스트
-    this.server.to(payload.roomId.toString()).emit('message', response);
+    this.server.to(payload.roomId.toString()).emit('message', message);
   }
 
   @SubscribeMessage('leaveCheerRoom')

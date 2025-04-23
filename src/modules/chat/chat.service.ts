@@ -172,4 +172,33 @@ export class ChatService {
 
     return { success: true, imageUrl: image.imageUrl };
   }
+
+  async createMessage(userId: number, roomId: number, content: string) {
+    const message = await this.prisma.messages.create({
+      data: {
+        cheerRoomId: roomId,
+        userId,
+        content,
+      },
+      include: {
+        users: {
+          select: {
+            nickname: true,
+            profileUrl: true,
+          },
+        },
+      },
+    });
+
+    const response = {
+      id: message.id,
+      userId: message.userId,
+      nickname: message.users.nickname,
+      profileUrl: message.users.profileUrl,
+      content: message.content,
+      createdAt: message.createdAt,
+    };
+
+    return response;
+  }
 }
