@@ -127,6 +127,42 @@ export class ChatGateway {
     client.emit('cheerRoomJoined', { messages: data.messages });
   }
 
+  @SubscribeMessage('cheerMessage')
+  async handleCheerMesssage(
+    client: Socket,
+    payload: { roomId: number; content: string },
+  ) {
+    const userId = Number(client.handshake.query.userId);
+
+    const message = await this.prisma.messages.create({
+      data: {
+        cheerRoomId: payload.roomId,
+        userId,
+        content: payload.content,
+      },
+      include: {
+        users: {
+          select: {
+            nickname: true,
+            profileUrl: true,
+          },
+        },
+      },
+    });
+
+    const response = {
+      id: message.id,
+      userId: message.userId,
+      nickname: message.users.nickname,
+      profileUrl: message.users.profileUrl,
+      content: message.content,
+      createdAt: message.createdAt,
+    };
+
+    // 같은 방에 있는 유저에게 메시지 브로드캐스트
+    this.server.to(payload.roomId.toString()).emit('message', response);
+  }
+
   @SubscribeMessage('leaveCheerRoom')
   async handleLeaveCheerRoom(client: Socket, payload: { roomId: number }) {
     const userId = Number(client.handshake.query.userId);
