@@ -126,4 +126,15 @@ export class ChatGateway {
     const data = await this.cheerService.getCheerRoomMessages(roomId, 0);
     client.emit('cheerRoomJoined', { messages: data.messages });
   }
+
+  @SubscribeMessage('leaveCheerRoom')
+  async handleLeaveCheerRoom(client: Socket, payload: { roomId: number }) {
+    const userId = Number(client.handshake.query.userId);
+    const { roomId } = payload;
+
+    client.leave(roomId.toString());
+    console.log(`${userId}번 유저 ${roomId}번 응원톡방 퇴장`);
+
+    client.emit('cheerRoomLeft', { roomId });
+  }
 }
