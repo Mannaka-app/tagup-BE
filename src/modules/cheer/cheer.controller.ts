@@ -1,6 +1,9 @@
-import { Controller, Get, Param, ParseIntPipe } from '@nestjs/common';
+import { Controller, Get, Param, ParseIntPipe, Query } from '@nestjs/common';
 import { CheerService } from './cheer.service';
-import { getTeamCheerTalkDocs } from './docs/cheer.doc';
+import {
+  getCheerRoomMessagesDocs,
+  getTeamCheerTalkDocs,
+} from './docs/cheer.doc';
 import { ApiTags } from '@nestjs/swagger';
 
 @Controller('cheer')
@@ -14,5 +17,17 @@ export class CheerController {
   @getTeamCheerTalkDocs.ApiResponse
   async getTeamCheerTalk(@Param('teamId', ParseIntPipe) teamId: number) {
     return await this.cheerService.getTeamCheerTalk(teamId);
+  }
+
+  @Get(':teamId/messages')
+  @getCheerRoomMessagesDocs.ApiOperation
+  @getCheerRoomMessagesDocs.ApiParam
+  @getCheerRoomMessagesDocs.ApiQuery
+  @getCheerRoomMessagesDocs.ApiResponse
+  async getTeamMessages(
+    @Param('teamId', ParseIntPipe) teamId: number,
+    @Query('cursor', ParseIntPipe) cursor: number,
+  ) {
+    return await this.cheerService.getCheerRoomMessages(teamId, cursor);
   }
 }
